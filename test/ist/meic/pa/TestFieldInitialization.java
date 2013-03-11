@@ -5,8 +5,8 @@ public class TestFieldInitialization {
 	int field;
 	
 	public static void main(String[] args) {
-		TestFieldInitialization fieldInitialization = new TestFieldInitialization();
 		try {
+			TestFieldInitialization fieldInitialization = new TestFieldInitialization();
 			fieldInitialization.accessInitializedField();
 			System.out.println("valid access: pass");
 		} catch(RuntimeException e){
@@ -14,6 +14,7 @@ public class TestFieldInitialization {
 			System.err.println("valid access: fail - Field is allready initialized.");
 		}
 		try {
+			TestFieldInitialization fieldInitialization = new TestFieldInitialization();
 			fieldInitialization.accessUninitializedField();
 			System.err.println("invalid access: fail - field access to uninitialized field.");
 		} catch(RuntimeException e){

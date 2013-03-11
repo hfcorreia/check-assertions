@@ -17,13 +17,15 @@ public class CheckAssertions {
 			String methodName = args[1];
 			ClassPool pool = ClassPool.getDefault();
 			CtClass ctClass = pool.get(className);
+
+			Object classAnnotations[] = ctClass.getAnnotations();
 			
 			//this expression should be read from the annotation
 			String assertExpression = "$1>5";
 			
 //			MethodInterceptor.interceptMethod(ctClass, methodName, assertExpression);
 
-			FieldWriteInterceptor.interceptField(ctClass, methodName, assertExpression);
+			FieldInterceptor.interceptField(ctClass, methodName, assertExpression);
 			
 			Class<?> rtClass = ctClass.toClass();
 

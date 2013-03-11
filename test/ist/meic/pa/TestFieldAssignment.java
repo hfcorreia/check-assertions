@@ -2,29 +2,32 @@ package ist.meic.pa;
 
 public class TestFieldAssignment {
 	
-	int field = 0;
+	int field = 10;
 	
 	public static void main(String[] args) {
-		TestFieldAssignment fieldAssignment = new TestFieldAssignment();
 		try {
-			fieldAssignment.setValidValue();
-			System.out.println("valid value: pass");
+			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
+			fieldAssignment.validWrite();
+			System.out.println("valid access: pass");
 		} catch(RuntimeException e){
 			e.printStackTrace();
-			System.err.println("valid valud: Field write a valid value but an exception was thrown.");
+			System.err.println("valid access: fail - valid write.");
 		}
 		try {
-			fieldAssignment.setInvalidValue();
-			System.err.println("invalid value: Field write invalid value.");
+			TestFieldAssignment fieldAssignme = new TestFieldAssignment();
+			fieldAssignme.invalidWrite();
+			System.err.println("invalid access: fail - invalid write as been made.");
 		} catch(RuntimeException e){
-			System.out.println("invalid value: pass");
+			System.out.println("invalid access: pass");
 		}
 	}
-
-	public void setValidValue(){
-		field = 10;
+	
+	public void validWrite(){
+		field = 1234;
 	}
-	public void setInvalidValue(){
-		field = 2;
+	
+	public void invalidWrite(){
+		field = -1;
 	}
+	
 }
