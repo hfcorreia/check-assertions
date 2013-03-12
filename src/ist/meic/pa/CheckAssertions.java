@@ -9,7 +9,7 @@ import javassist.CtField;
 import javassist.CtMethod;
 
 public class CheckAssertions {
-
+ 
 	public static void main(String[] args) throws Throwable {
 		if (args.length < 2) {
 			System.err.println("Usage: java Memoize <class> <method>");
