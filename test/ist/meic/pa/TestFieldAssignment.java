@@ -2,9 +2,22 @@ package ist.meic.pa;
 
 public class TestFieldAssignment {
 	
-	int field = 10;
+	int otherField = 10;
+	
+	@Assertion("field > otherField")
+	int field;
 	
 	public static void main(String[] args) {
+		
+		try {
+			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
+			fieldAssignment.validInit();
+			System.out.println("valid access: pass");
+		} catch(RuntimeException e){
+			e.printStackTrace();
+			System.err.println("valid access: fail - valid init.");
+		}
+		
 		try {
 			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
 			fieldAssignment.validWrite();
@@ -20,6 +33,10 @@ public class TestFieldAssignment {
 		} catch(RuntimeException e){
 			System.out.println("invalid access: pass");
 		}
+	}
+	
+	public void validInit(){
+		field = 11;
 	}
 	
 	public void validWrite(){

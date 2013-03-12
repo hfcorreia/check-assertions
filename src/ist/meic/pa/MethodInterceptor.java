@@ -6,7 +6,7 @@ import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 public class MethodInterceptor {
-	public static void interceptMethod(final CtClass ctClass, final String methodName, final String assertExpression) throws Exception {
+	public void interceptMethod(final CtClass ctClass, final String methodName, final String assertExpression) throws Exception {
 		System.out.println("intercepting method " + ctClass.getName() + "."
 				+ methodName + "()");
 
@@ -23,7 +23,7 @@ public class MethodInterceptor {
 							"$_ = $proceed($$); " + 
 							"if(!(" + assertExpression + ")) {" +
 								"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
-							"}"+
+							"}" +
 						"}";
 			}
 

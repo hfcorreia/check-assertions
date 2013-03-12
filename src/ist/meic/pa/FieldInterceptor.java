@@ -8,8 +8,7 @@ import javassist.expr.FieldAccess;
 
 public class FieldInterceptor {
 	
-	public static void interceptField(final CtClass ctClass, final String fieldName, final String assertExpression) throws Exception {
-		System.out.println("intercepting field " + ctClass.getName() + "." + fieldName);
+	public void interceptField(final CtClass ctClass, final String fieldName, final String assertExpression) throws Exception {
 
 		//criar variavel que verirfica se o campo ja foi inicializado
 		CtField newField = new CtField(CtClass.booleanType, fieldName+"$isInitialized", ctClass);
@@ -19,23 +18,17 @@ public class FieldInterceptor {
 		ctClass.instrument(new ExprEditor() { 
 			public void edit(FieldAccess fieldAccess) throws CannotCompileException {
 				if(fieldAccess.isWriter() && fieldAccess.getFieldName().equals(fieldName)){
-					//instrumenta acessos de escrita ao field
-//					System.out.println("Founded a valid write field access");
 					fieldAccess.replace(createWriteFieldBody(assertExpression));
 				} else if(fieldAccess.isReader() && fieldAccess.getFieldName().equals(fieldName)) {
-					//instrumenta acessos de leitura ao field
-//					System.out.println("Founded a valid read field access");
-					fieldAccess.replace(createReadFieldBody(assertExpression));
+					fieldAccess.replace(createReadFieldBody(fieldName));
 				}
 			}
 
-			private String createReadFieldBody(String assertExpression) {
+			private String createReadFieldBody(String fieldName) {
 				return 	"{ " +
 						"if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
-							//acesso de leitura INVALIDO
-							"throw new java.lang.RuntimeException(\"not initialized field\");" + 
+							"throw new java.lang.RuntimeException(\"Error: " + fieldName + "was not initialized\");" + 
 						"} else {"+ 
-							//acesso de leitura VALIDO
 							"$_ = $proceed(); " + 
 						"}" +
 					"}";
@@ -43,13 +36,12 @@ public class FieldInterceptor {
 
 			private String createWriteFieldBody(final String assertExpression) {
 				return 	"{ " +
-							"if(! ( " + assertExpression + " ) ) {" + 
-								//acesso de escrita INVALIDO
-								"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
-							"} else {"+ 
-								//acesso de escrita VALIDO
+							//TODO: analizar o nivel de martelanço desta linha
+							"if( " + assertExpression.replace(fieldName, "$1") + " ) {" + 
 								"$proceed($$); " + 
 								fieldName + "$isInitialized = true;" +
+							"} else {"+ 
+								"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
 							"}" +
 						"}";
 			}

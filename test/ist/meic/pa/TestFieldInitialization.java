@@ -2,6 +2,7 @@ package ist.meic.pa;
 
 public class TestFieldInitialization {
 	
+	@Assertion("true")
 	int field;
 	
 	public static void main(String[] args) {
