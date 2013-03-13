@@ -28,7 +28,7 @@ public class CheckAssertions {
 		for (CtMethod ctMethod : ctClass.getMethods()) {
 			if (ctMethod.hasAnnotation(Assertion.class)) {
 				MethodInterceptor methodInterceptor = new MethodInterceptor();
-				methodInterceptor.interceptMethod(ctClass, methodName, getHierarquicalAssertExpression(ctClass, ctMethod));
+				methodInterceptor.interceptMethod(ctClass, methodName, recursiveAssertExpression(ctClass, ctMethod.getName(), ctMethod.getSignature()));
 			}
 		}
   
@@ -50,10 +50,33 @@ public class CheckAssertions {
 
 	}
 
-	private static String getHierarquicalAssertExpression(CtClass ctClass, CtMethod ctMethod) throws ClassNotFoundException, NotFoundException {
-		//TODO
-		Assertion assertion = ((Assertion) ctMethod.getAnnotation(Assertion.class));
-		return assertion != null ? assertion.value() : "";
-	}
+//	private static String getHierarquicalAssertExpression(CtClass ctClass, CtMethod ctMethod) throws ClassNotFoundException, NotFoundException {
+//		//TODO
+//		Assertion assertion = ((Assertion) ctMethod.getAnnotation(Assertion.class));
+//		return assertion != null ? assertion.value() : "";
+//	}
+	
+	private static String recursiveAssertExpression(CtClass ctClass, String methodName, String methodDesc) throws Exception {
+		if( ctClass.getSuperclass()!=null ){
+			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
 
+			CtMethod ctMethod = getMethod(ctClass, methodName, methodDesc);
+			return superClassExpression + ( ctMethod!=null ? getAssertExpression(ctClass, ctMethod) : "" );
+		} else {
+			return "";
+		}
+	}
+	
+	private static CtMethod getMethod(CtClass ctClass, String methodName, String methodDesc){
+		try {
+			return ctClass.getMethod(methodName, methodDesc);
+		} catch (NotFoundException e) {
+			return null;
+		}
+	}
+	
+	private static String getAssertExpression(CtClass ctClass, CtMethod ctMethod) throws ClassNotFoundException {
+		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod.getAnnotation(Assertion.class)).value() : "";
+	}
+	
 }
