@@ -63,5 +63,8 @@
 		<delete dir="${build}" />
         <delete dir="ist" />
 	</target>
+	
+	<target name="test-all" description="Runs all the tests" depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn"></target>
+	    
 
 </project>
