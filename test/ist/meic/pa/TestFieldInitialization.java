@@ -3,7 +3,7 @@ package ist.meic.pa;
 public class TestFieldInitialization {
 	
 	@Assertion("true")
-	int field;
+	int testField;
 	
 	public static void main(String[] args) {
 		try {
@@ -24,11 +24,11 @@ public class TestFieldInitialization {
 	}
 	
 	public int readField(){
-		return field;
+		return testField;
 	}
 	
 	public void initializeField(){
-		field = 123;
+		testField = 123;
 	}
 	
 	public void accessUninitializedField(){
