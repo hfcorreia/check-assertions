@@ -61,6 +61,7 @@
 
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
+        <delete dir="ist" />
 	</target>
 
 </project>
