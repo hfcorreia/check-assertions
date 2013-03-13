@@ -62,5 +62,8 @@
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
 	</target>
+	
+	<target name="test-all" description="Runs all the tests" depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn"></target>
+	    
 
 </project>
