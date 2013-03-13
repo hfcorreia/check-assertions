@@ -2,7 +2,7 @@
 /.settings
 /.classpath
 /.project
-
 /bin/*
 *.class
 /bin
+/.externalToolBuilders
