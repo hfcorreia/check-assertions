@@ -61,9 +61,11 @@ public class CheckAssertions {
 			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
 
 			CtMethod ctMethod = getMethod(ctClass, methodName, methodDesc);
-			return superClassExpression + ( ctMethod!=null ? getAssertExpression(ctClass, ctMethod) : "" );
+			String r = superClassExpression + " && " + ( ctMethod!=null ? getAssertExpression(ctClass, ctMethod) : "true" );
+			System.out.println(r);
+			return r;
 		} else {
-			return "";
+			return "true";
 		}
 	}
 	

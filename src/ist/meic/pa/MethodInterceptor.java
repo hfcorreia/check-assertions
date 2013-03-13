@@ -12,7 +12,6 @@ public class MethodInterceptor {
 		ctClass.instrument(new ExprEditor() { 
 			public void edit(MethodCall methodCall) throws CannotCompileException {
 				if(methodCall.getMethodName().equals(methodName)){
-					System.out.println("Founded a valid methodcall");
 					methodCall.replace(createMethodBody(assertExpression));
 				}
 			}
