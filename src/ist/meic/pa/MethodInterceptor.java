@@ -7,14 +7,13 @@ import javassist.expr.MethodCall;
 
 public class MethodInterceptor {
 	public void interceptMethod(final CtClass ctClass, final String methodName, final String assertExpression) throws Exception {
-		System.out.println("intercepting method " + ctClass.getName() + "."
-				+ methodName + "()");
-
+		System.out.println("intercepting method " + ctClass.getName() + "." + methodName + "()");
+  
 		ctClass.instrument(new ExprEditor() { 
 			public void edit(MethodCall methodCall) throws CannotCompileException {
 				if(methodCall.getMethodName().equals(methodName)){
 					System.out.println("Founded a valid methodcall");
-						methodCall.replace(createMethodBody(assertExpression));
+					methodCall.replace(createMethodBody(assertExpression));
 				}
 			}
 

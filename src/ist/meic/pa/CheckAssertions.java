@@ -7,12 +7,13 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 
 public class CheckAssertions {
- 
+
 	public static void main(String[] args) throws Throwable {
 		if (args.length < 2) {
-			System.err.println("Usage: java Memoize <class> <method>");
+			System.err.println("Usage: <class> <arguments>");
 			System.exit(1);
 		}
 
@@ -24,25 +25,19 @@ public class CheckAssertions {
 
 		// Annotated methods
 
-		for (CtMethod method : ctClass.getMethods()) {
-			if (method.hasAnnotation(Assertion.class)) {
+		for (CtMethod ctMethod : ctClass.getMethods()) {
+			if (ctMethod.hasAnnotation(Assertion.class)) {
 				MethodInterceptor methodInterceptor = new MethodInterceptor();
-				Assertion assertAnnotation = (Assertion) method
-						.getAnnotation(Assertion.class);
-				methodInterceptor.interceptMethod(ctClass, methodName,
-						assertAnnotation.value());
+				methodInterceptor.interceptMethod(ctClass, methodName, getHierarquicalAssertExpression(ctClass, ctMethod));
 			}
 		}
-
+  
 		// Annotated fields
-
 		for (CtField field : ctClass.getFields()) {
 			if (field.hasAnnotation(Assertion.class)) {
 				FieldInterceptor fieldInterceptor = new FieldInterceptor();
-				Assertion assertAnnotation = (Assertion) field
-						.getAnnotation(Assertion.class);
-				fieldInterceptor.interceptField(ctClass, methodName,
-						assertAnnotation.value());
+				Assertion assertAnnotation = (Assertion) field.getAnnotation(Assertion.class);
+				fieldInterceptor.interceptField(ctClass, methodName, assertAnnotation.value());
 			}
 		}
 
@@ -53,6 +48,12 @@ public class CheckAssertions {
 		String[] methodArgs = Arrays.copyOfRange(args, 2, args.length);
 		main.invoke(null, new Object[] { methodArgs });
 
+	}
+
+	private static String getHierarquicalAssertExpression(CtClass ctClass, CtMethod ctMethod) throws ClassNotFoundException, NotFoundException {
+		//TODO
+		Assertion assertion = ((Assertion) ctMethod.getAnnotation(Assertion.class));
+		return assertion != null ? assertion.value() : "";
 	}
 
 }
