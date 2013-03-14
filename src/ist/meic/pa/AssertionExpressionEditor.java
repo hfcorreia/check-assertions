@@ -23,8 +23,9 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
 			if(methodCall.getMethod().hasAnnotation(Assertion.class)){
-				String assertionExpr = methodInterceptor.recursiveAssertExpression(ctClass, methodCall);
-				//				System.out.println("DEBUG # " + assertionExpr);
+//                String assertionExpr = methodInterceptor.recursiveAssertExpression(ctClass, methodCall.getMethodName(), methodCall.getSignature());
+				String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
+//				System.out.println("DEBUG # " + assertionExpr + " vs " + mineExp);
 
 				String postMethod = 
 						"if(!("+ assertionExpr + ")) {"
@@ -45,7 +46,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
-				
+
 				Assertion assertion = (Assertion) fieldAccess.getField().getAnnotation(Assertion.class);
 
 				if(fieldAccess.isWriter()){
