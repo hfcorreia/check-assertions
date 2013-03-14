@@ -22,11 +22,11 @@
 	</target>
 
 	<target name="compile" depends="init">
-		<javac destdir="${build}" includeantruntime="false">
+		<javac destdir="${build}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<src path="${src}" />
 			<classpath refid="project.classpath" />
 		</javac>
-		<javac destdir="${build}" includeantruntime="false">
+		<javac destdir="${build}" includeantruntime="false" debug="true" debuglevel="lines,vars,source">
 			<src path="${test}" />
 			<classpath refid="project.classpath" />
 		</javac>
