@@ -1,5 +1,5 @@
 package ist.meic.pa;
- 
+
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)

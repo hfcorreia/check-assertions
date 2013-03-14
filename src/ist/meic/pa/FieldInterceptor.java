@@ -47,15 +47,15 @@ public class FieldInterceptor {
 
 	public String createWriteFieldBody(String assertExpression, String fieldName ) {
 		return 	"{ " + 
-				fieldName + "$isInitializedTemp = " + fieldName + "$isInitialized;" + 
-				fieldName + "$isInitialized = true;" +
-				fieldName + "$tmpValue = " + fieldName +  ";" + 
-				"$proceed($$); " + 
-				"if( ! (" + assertExpression + ") ) {" + 
-				fieldName + " = " + fieldName + "$tmpValue;" + 
-				fieldName + "$isInitialized = " + fieldName + "$isInitializedTemp;" + 
-				"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
-				"}" +
+					fieldName + "$isInitializedTemp = " + fieldName + "$isInitialized;" + 
+					fieldName + "$isInitialized = true;" +
+					fieldName + "$tmpValue = " + fieldName +  ";" + 
+					"$proceed($$); " + 
+					"if( ! (" + assertExpression + ") ) {" + 
+						fieldName + " = " + fieldName + "$tmpValue;" + 
+						fieldName + "$isInitialized = " + fieldName + "$isInitializedTemp;" + 
+						"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
+					"}" +
 				"}";
 	} 
 

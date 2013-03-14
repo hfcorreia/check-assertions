@@ -7,7 +7,7 @@ public class CheckAssertions {
 
 	public static void main(String[] args) throws Throwable {
 		if (args.length < 1) {
-			System.err.println("Usage: <class> <arguments>");
+			System.err.println("Usage: Java CheckAssertions <class> <arguments>");
 			System.exit(1);
 		}
 

@@ -3,6 +3,7 @@ package ist.meic.pa;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.expr.MethodCall;
 
 public class MethodInterceptor {
 
@@ -10,7 +11,7 @@ public class MethodInterceptor {
 		return "{ " 
 				+ "$_ = $proceed($$); " 
 				+ "if(!(" + assertExpression + ")) {"
-				+ 	"throw new java.lang.RuntimeException("+ createErrorMessage(assertExpression) + ");"
+				+	 	"throw new java.lang.RuntimeException("+ createErrorMessage(assertExpression) + ");"
 				+ "}" 
 				+"}";
 	}
@@ -19,40 +20,26 @@ public class MethodInterceptor {
 		return "\"The assertion " + assertExpression + " is false\"";
 	}
 
-	public String recursiveAssertExpression(CtClass ctClass, String methodName, String methodDesc) throws Exception {
+	public String recursiveAssertExpression(CtClass ctClass, MethodCall methodCall) throws Exception {
 		if (ctClass.getSuperclass() != null) {
-			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
+			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodCall);
 
-			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
+			CtMethod ctMethod = ctClass.getMethod(methodCall.getMethodName(), methodCall.getSignature());
+			
 			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
-
 			return r;
 		} else {
 			return "true";
 		}
 	}
 	
-	public String recursiveRijo(CtClass ctClass, String methodName, String methodDesc) throws Exception {
-		if (ctClass.getSuperclass() != null) {
-			String superClassExpression = recursiveRijo(ctClass.getSuperclass(), methodName, methodDesc);
-
-			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
-			String r = superClassExpression + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "");
-			System.out.println("DEBUG # " + r);
-			return r;
-		} else {
-			return getMethod(ctClass, methodName,methodDesc) != null ? 
-					((Assertion) getMethod(ctClass, methodName,methodDesc).getAnnotation(Assertion.class)).value() + " && " : "";
-		}
-	}
-
-	private CtMethod getMethod(CtClass ctClass, String methodName, String methodDesc) {
-		try {
-			return ctClass.getMethod(methodName, methodDesc);
-		} catch (NotFoundException e) {
-			return null;
-		}
-	}
+//	private CtMethod getMethod(CtClass ctClass, String methodName, String methodDesc) {
+//		try {
+//			return ctClass.getMethod(methodName, methodDesc);
+//		} catch (NotFoundException e) {
+//			return null;
+//		}
+//	}
 
 	private String getAssertExpression(CtClass ctClass,	CtMethod ctMethod) throws ClassNotFoundException {
 		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod.getAnnotation(Assertion.class)).value() : "";
