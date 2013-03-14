@@ -18,27 +18,34 @@ public class MethodInterceptor {
 		return "\"The assertion " + assertExpression + " is false\"";
 	}
 
-	public String recursiveAssertExpression(CtClass ctClass,
-			String methodName, String methodDesc) throws Exception {
+	public String recursiveAssertExpression(CtClass ctClass, String methodName, String methodDesc) throws Exception {
 		if (ctClass.getSuperclass() != null) {
-			String superClassExpression = recursiveAssertExpression(
-					ctClass.getSuperclass(), methodName, methodDesc);
+			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
 
-			CtMethod ctMethod = getMethod(ctClass, methodName,
-					methodDesc);
-			String r = superClassExpression
-					+ " && "
-					+ (ctMethod != null ? getAssertExpression(ctClass,
-							ctMethod) : "true");
+			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
+			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
 //			System.out.println(r);
 			return r;
 		} else {
 			return "true";
 		}
 	}
+	
+	public String recursiveRijo(CtClass ctClass, String methodName, String methodDesc) throws Exception {
+		if (ctClass.getSuperclass() != null) {
+			String superClassExpression = recursiveRijo(ctClass.getSuperclass(), methodName, methodDesc);
 
-	private CtMethod getMethod(CtClass ctClass, String methodName,
-			String methodDesc) {
+			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
+			String r = superClassExpression + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "");
+			System.out.println("DEBUG # " + r);
+			return r;
+		} else {
+			return getMethod(ctClass, methodName,methodDesc) != null ? 
+					((Assertion) getMethod(ctClass, methodName,methodDesc).getAnnotation(Assertion.class)).value() + " && " : "";
+		}
+	}
+
+	private CtMethod getMethod(CtClass ctClass, String methodName, String methodDesc) {
 		try {
 			return ctClass.getMethod(methodName, methodDesc);
 		} catch (NotFoundException e) {
@@ -46,9 +53,7 @@ public class MethodInterceptor {
 		}
 	}
 
-	private String getAssertExpression(CtClass ctClass,
-			CtMethod ctMethod) throws ClassNotFoundException {
-		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod
-				.getAnnotation(Assertion.class)).value() : "";
+	private String getAssertExpression(CtClass ctClass,	CtMethod ctMethod) throws ClassNotFoundException {
+		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod.getAnnotation(Assertion.class)).value() : "";
 	}
 }

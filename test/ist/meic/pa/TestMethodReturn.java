@@ -18,7 +18,6 @@ import java.io.PrintStream;
 
 public class TestMethodReturn extends TestAssertion{
 	
-
 	int testField = 30;
 	
 	@Assertion("$1>2") 
@@ -61,15 +60,15 @@ public class TestMethodReturn extends TestAssertion{
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
-//			methodReturn.m2(50);
-			printTestResult(System.err, FAIL, "m2", "50");
-		} catch(RuntimeException e){
+			methodReturn.m2(50);
 			printTestResult(System.out, PASS, "m2", "50");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "m2", "50");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
-//			methodReturn.m2(1);
+			methodReturn.m2(1);
 			printTestResult(System.err, FAIL, "m2", "1");
 		} catch(RuntimeException e){
 			printTestResult(System.out, PASS, "m2", "1");
@@ -98,6 +97,9 @@ public class TestMethodReturn extends TestAssertion{
 		} catch(RuntimeException e){
 			printTestResult(System.out, PASS, "m4" , "t");
 		}
+		
+		TestMethodReturn methodReturn = new TestMethodReturn();
+		methodReturn.testField = 20;
 	}
 	
 }
