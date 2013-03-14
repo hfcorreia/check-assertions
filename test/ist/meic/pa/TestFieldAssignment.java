@@ -12,26 +12,27 @@ public class TestFieldAssignment extends TestAssertion{
 		try {
 			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
 			fieldAssignment.validInit();
-			System.out.println("valid access: pass");
+			printTestResult(System.out, PASS, "validInit", "");
 		} catch(RuntimeException e){
 			e.printStackTrace();
-			System.err.println("valid access: fail - valid init.");
+			printTestResult(System.err, FAIL, "validInit", "");
 		}
 		
 		try {
 			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
 			fieldAssignment.validWrite();
-			System.out.println("valid access: pass");
+			printTestResult(System.out, PASS, "validWrite", "");
 		} catch(RuntimeException e){
 			e.printStackTrace();
-			System.err.println("valid access: fail - valid write.");
+			printTestResult(System.err, FAIL, "validWrite", "");
 		}
 		try {
-			TestFieldAssignment fieldAssignme = new TestFieldAssignment();
-			fieldAssignme.invalidWrite();
+			TestFieldAssignment fieldAssignment = new TestFieldAssignment();
+			fieldAssignment.invalidWrite();
 			System.err.println("invalid access: fail - invalid write as been made.");
+			printTestResult(System.err, FAIL, "invalidWrite", "");
 		} catch(RuntimeException e){
-			System.out.println("invalid access: pass");
+			printTestResult(System.out, PASS, "invlaidWrite", "");
 		}
 	}
 	

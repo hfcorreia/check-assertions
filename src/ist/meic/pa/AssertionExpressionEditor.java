@@ -27,6 +27,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
 			if(methodCall.getMethod().hasAnnotation(Assertion.class)){
+
 				/*
 				 * o que se passa? 
 				 * estamos a alterar o methodCall em vez do metodo. como quem diz que em vez de no teste haver testReturn.m2(10) existe algo tipo:
@@ -45,6 +46,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 						+ "}";
 				
 				methodCall.getMethod().insertAfter(postMethod);
+
 			}
 		} catch (NotFoundException e) {
 			e.printStackTrace();

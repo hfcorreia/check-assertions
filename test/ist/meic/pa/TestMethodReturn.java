@@ -1,7 +1,5 @@
 package ist.meic.pa;
 
-import java.io.PrintStream;
-
 /*
  * testes
  * 	heranca
@@ -19,7 +17,7 @@ import java.io.PrintStream;
 public class TestMethodReturn extends TestAssertion{
 	
 	int testField = 30;
-	
+
 	@Assertion("$1>2") 
 	public int m1(int x) {
 		return x;
@@ -39,6 +37,11 @@ public class TestMethodReturn extends TestAssertion{
 	public String m4(String s) {
 		return s;
 	}
+	
+	public TestMethodReturn() {
+		super();
+	}
+	
 	
 	public static void main(String[] args) {
 		
@@ -98,8 +101,6 @@ public class TestMethodReturn extends TestAssertion{
 			printTestResult(System.out, PASS, "m4" , "t");
 		}
 		
-		TestMethodReturn methodReturn = new TestMethodReturn();
-		methodReturn.testField = 20;
 	}
 	
 }

@@ -7,11 +7,12 @@ import javassist.NotFoundException;
 public class MethodInterceptor {
 
 	public String createMethodBody(final String assertExpression) {
-		return "{ " + "$_ = $proceed($$); " + "if(!("
-				+ assertExpression + ")) {"
-				+ "throw new java.lang.RuntimeException("
-				+ createErrorMessage(assertExpression) + ");" + "}"
-				+ "}";
+		return "{ " 
+				+ "$_ = $proceed($$); " 
+				+ "if(!(" + assertExpression + ")) {"
+				+ 	"throw new java.lang.RuntimeException("+ createErrorMessage(assertExpression) + ");"
+				+ "}" 
+				+"}";
 	}
 
 	public String createErrorMessage(String assertExpression) {
@@ -25,6 +26,7 @@ public class MethodInterceptor {
 			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
 			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
 //			System.out.println(r);
+
 			return r;
 		} else {
 			return "true";
