@@ -18,16 +18,8 @@ public class CheckAssertions {
 		Loader classLoader = new Loader();
 		classLoader.addTranslator(pool, translator);
 			
-		// execute main of the class given as argument
-
 		String[] methodArgs =  new String[args.length -1 ];
 		System.arraycopy(args, 1, methodArgs, 0, methodArgs.length);
 		classLoader.run(className, methodArgs);
 	}
-
-//	private static String getHierarquicalAssertExpression(CtClass ctClass, CtMethod ctMethod) throws ClassNotFoundException, NotFoundException {
-//		//TODO
-//		Assertion assertion = ((Assertion) ctMethod.getAnnotation(Assertion.class));
-//		return assertion != null ? assertion.value() : "";
-//	}
 }

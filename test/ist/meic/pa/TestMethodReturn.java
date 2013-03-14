@@ -1,7 +1,5 @@
 package ist.meic.pa;
 
-import java.io.PrintStream;
-
 /*
  * testes
  * 	heranca
@@ -19,14 +17,14 @@ import java.io.PrintStream;
 public class TestMethodReturn extends TestAssertion{
 	
 
-	int testField = 30;
+	int testField2 = 10;
 	
 	@Assertion("$1>2") 
 	public int m1(int x) {
 		return x;
 	}
 	
-	@Assertion("$1 > testField") 
+	@Assertion("$1 > testField2") 
 	public int m2(int x) {
 		return x;
 	}
@@ -41,63 +39,68 @@ public class TestMethodReturn extends TestAssertion{
 		return s;
 	}
 	
+	public TestMethodReturn() {
+		super();
+	}
+	
+	
 	public static void main(String[] args) {
 		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m1(10);
-			printTestResult(System.out, PASS, "m1", "10");
-		} catch(RuntimeException e){
-			printTestResult(System.err, FAIL, "m1", "10");
-		}
-		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m1(1);
-			printTestResult(System.err, FAIL, "m1", "1");
-		} catch(RuntimeException e){
-			printTestResult(System.out, PASS, "m1", "1");
-		}
-		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m1(10);
+//			printTestResult(System.out, PASS, "m1", "10");
+//		} catch(RuntimeException e){
+//			printTestResult(System.err, FAIL, "m1", "10");
+//		}
+//		
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m1(1);
+//			printTestResult(System.err, FAIL, "m1", "1");
+//		} catch(RuntimeException e){
+//			printTestResult(System.out, PASS, "m1", "1");
+//		}
+////		
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
 //			methodReturn.m2(50);
-			printTestResult(System.err, FAIL, "m2", "50");
-		} catch(RuntimeException e){
-			printTestResult(System.out, PASS, "m2", "50");
-		}
+//			printTestResult(System.err, FAIL, "m2", "50");
+//		} catch(RuntimeException e){
+//			printTestResult(System.out, PASS, "m2", "50");
+//		}
+//		
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m2(20);
+//			printTestResult(System.err, FAIL, "m2", "1");
+//		} catch(RuntimeException e){
+//			printTestResult(System.out, PASS, "m2", "1");
+//		}
 		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-//			methodReturn.m2(1);
-			printTestResult(System.err, FAIL, "m2", "1");
-		} catch(RuntimeException e){
-			printTestResult(System.out, PASS, "m2", "1");
-		}
-		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m3(3,5);
-			printTestResult(System.out, PASS, "m3","3,5");
-		} catch(RuntimeException e){
-			printTestResult(System.err, FAIL, "m3","3,5");
-		}
-		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m4("tested String");
-			printTestResult(System.out, PASS, "m4" , "testedString");
-		} catch(RuntimeException e){
-			printTestResult(System.err, FAIL, "m4" , "testedString");
-		}
-		
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m4("t");
-			printTestResult(System.err, FAIL, "m4" , "t");
-		} catch(RuntimeException e){
-			printTestResult(System.out, PASS, "m4" , "t");
-		}
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m3(3,5);
+//			printTestResult(System.out, PASS, "m3","3,5");
+//		} catch(RuntimeException e){
+//			printTestResult(System.err, FAIL, "m3","3,5");
+//		}
+//		
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m4("tested String");
+//			printTestResult(System.out, PASS, "m4" , "testedString");
+//		} catch(RuntimeException e){
+//			printTestResult(System.err, FAIL, "m4" , "testedString");
+//		}
+//		
+//		try{
+//			TestMethodReturn methodReturn = new TestMethodReturn();
+//			methodReturn.m4("t");
+//			printTestResult(System.err, FAIL, "m4" , "t");
+//		} catch(RuntimeException e){
+//			printTestResult(System.out, PASS, "m4" , "t");
+//		}
 	}
 	
 }

@@ -9,17 +9,18 @@ public class TestFieldInitialization extends TestAssertion{
 		try {
 			TestFieldInitialization fieldInitialization = new TestFieldInitialization();
 			fieldInitialization.accessInitializedField();
-			System.out.println("valid access: pass");
+			printTestResult(System.out, PASS, "accessInitializedField", "");
 		} catch(RuntimeException e){
-			e.printStackTrace();
-			System.err.println("valid access: fail - Field is allready initialized.");
+			printTestResult(System.err, FAIL, "accessInitializedField", "");
 		}
+		
 		try {
 			TestFieldInitialization fieldInitialization = new TestFieldInitialization();
 			fieldInitialization.accessUninitializedField();
-			System.err.println("invalid access: fail - field access to uninitialized field.");
+			printTestResult(System.err, FAIL, "accessUnitializedField", "");
 		} catch(RuntimeException e){
-			System.out.println("invalid access: pass");
+			printTestResult(System.out, PASS, "accessInitializedField", "");
+
 		}
 	}
 	

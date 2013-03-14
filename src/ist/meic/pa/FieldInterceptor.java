@@ -27,7 +27,6 @@ public class FieldInterceptor {
 
 	private boolean existsFields(CtClass ctClass, String fieldName) {
 		try {
-//			return ctClass.getField(fieldName + "$isInitialized") != null;
 			ctClass.getField(fieldName);
 			
 			return true;

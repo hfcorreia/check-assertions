@@ -23,7 +23,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
 			if(methodCall.getMethod().hasAnnotation(Assertion.class)){
-				methodCall.replace(methodInterceptor.createMethodBody(methodInterceptor.recursiveAssertExpression(ctClass, methodCall.getMethodName(), methodCall.getSignature())));
+				methodCall.replace(
+						methodInterceptor.createMethodBody(
+								methodInterceptor.recursiveAssertExpression(
+										ctClass, methodCall.getMethodName(), methodCall.getSignature())));
 			}
 		} catch (NotFoundException e) {
 			e.printStackTrace();
