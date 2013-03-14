@@ -1,5 +1,7 @@
 package ist.meic.pa;
 
+import java.io.PrintStream;
+
 /*
  * testes
  * 	heranca
@@ -14,8 +16,9 @@ package ist.meic.pa;
  */
 
 
-public class TestMethodReturn {
+public class TestMethodReturn extends TestAssertion{
 	
+
 	int testField = 30;
 	
 	@Assertion("$1>2") 
@@ -43,61 +46,59 @@ public class TestMethodReturn {
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m1(10);
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m1", "10");
 		} catch(RuntimeException e){
-			System.err.println("fail - valid parameter and an error was thrown");
+			printTestResult(System.err, FAIL, "m1", "10");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m1(1);
-			System.err.println("fail - invalid parameter and no error");
+			printTestResult(System.err, FAIL, "m1", "1");
 		} catch(RuntimeException e){
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m1", "1");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m2(50);
-			System.err.println("fail - invalid parameter and no error");
+//			methodReturn.m2(50);
+			printTestResult(System.err, FAIL, "m2", "50");
 		} catch(RuntimeException e){
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m2", "50");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m2(1);
-			System.err.println("fail - invalid parameter and no error");
+//			methodReturn.m2(1);
+			printTestResult(System.err, FAIL, "m2", "1");
 		} catch(RuntimeException e){
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m2", "1");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m3(3,5);
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m3","3,5");
 		} catch(RuntimeException e){
-			System.err.println("fail - invalid parameter and no error");
+			printTestResult(System.err, FAIL, "m3","3,5");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m4("tested String");
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m4" , "testedString");
 		} catch(RuntimeException e){
-			System.err.println("fail - invalid parameter and no error");
+			printTestResult(System.err, FAIL, "m4" , "testedString");
 		}
 		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m4("t");
-			System.err.println("fail - invalid parameter and no error");
+			printTestResult(System.err, FAIL, "m4" , "t");
 		} catch(RuntimeException e){
-			System.out.println("pass");
+			printTestResult(System.out, PASS, "m4" , "t");
 		}
-		
-		
-		
 	}
 	
 }
+

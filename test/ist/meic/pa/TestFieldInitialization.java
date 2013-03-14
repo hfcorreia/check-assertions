@@ -1,6 +1,6 @@
 package ist.meic.pa;
 
-public class TestFieldInitialization {
+public class TestFieldInitialization extends TestAssertion{
 	
 	@Assertion("true")
 	int testField;

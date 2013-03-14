@@ -1,6 +1,6 @@
 package ist.meic.pa;
 
-public class TestFieldAssignment {
+public class TestFieldAssignment extends TestAssertion{
 	
 	int otherField = 10;
 	

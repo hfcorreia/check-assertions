@@ -30,7 +30,7 @@ public class MethodInterceptor {
 					+ " && "
 					+ (ctMethod != null ? getAssertExpression(ctClass,
 							ctMethod) : "true");
-			System.out.println(r);
+//			System.out.println(r);
 			return r;
 		} else {
 			return "true";
