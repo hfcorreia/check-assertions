@@ -28,21 +28,12 @@ public class AssertionExpressionEditor extends ExprEditor {
 		try {
 			if(methodCall.getMethod().hasAnnotation(Assertion.class)){
 
-				/*
-				 * o que se passa? 
-				 * estamos a alterar o methodCall em vez do metodo. como quem diz que em vez de no teste haver testReturn.m2(10) existe algo tipo:
-				 * testReturn.m2(10); if($_ < testeField) ....
-				 * ou seja, no main do test estamos a tentar aceder ao campo, dai o erro
-				 * solucao:
-				 * obter metodo e alterar
-				 * como?
-				 * o prof disse que havia um CtMethod.replace mas o meu eclipse diz q nao. existe tambem um insertAfter/Before
-				 */
-				String ass = methodInterceptor.recursiveAssertExpression(ctClass, methodCall.getMethodName(), methodCall.getSignature());
+				String assertionExpr = methodInterceptor.recursiveAssertExpression(ctClass, methodCall.getMethodName(), methodCall.getSignature());
+//				System.out.println("DEBUG # " + assertionExpr);
 				
 				String postMethod = 
-						"if(!("+ ass + ")) {"
-								+ "throw new java.lang.RuntimeException(\"The assertion " + ass + " is false\");"
+						"if(!("+ assertionExpr + ")) {"
+								+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
 						+ "}";
 				
 				methodCall.getMethod().insertAfter(postMethod);

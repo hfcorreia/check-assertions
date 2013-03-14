@@ -25,7 +25,6 @@ public class MethodInterceptor {
 
 			CtMethod ctMethod = getMethod(ctClass, methodName,methodDesc);
 			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
-//			System.out.println(r);
 
 			return r;
 		} else {

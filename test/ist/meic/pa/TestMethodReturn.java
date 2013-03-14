@@ -4,7 +4,6 @@ package ist.meic.pa;
  * testes
  * 	heranca
  * 		metodo so na super
- *		invocar pela super
  * 		metodo em ambos
  * 		metodo so na subclass
  * 		super super class
@@ -14,7 +13,7 @@ package ist.meic.pa;
  */
 
 
-public class TestMethodReturn extends TestAssertion{
+public class TestMethodReturn extends TestMethodReturnSuper implements TestMethodReturnInterface {
 	
 	int testField = 30;
 
@@ -38,10 +37,21 @@ public class TestMethodReturn extends TestAssertion{
 		return s;
 	}
 	
-	public TestMethodReturn() {
-		super();
+	
+	@Assertion("$1>2") 
+	public int superBoth1(int x) {
+		return x;
 	}
 	
+	@Assertion("$1!=50") 
+	public int superOnAll(int x) {
+		return x;
+	}
+	
+	@Override
+	public int mInterface1(int x) {
+		return x;
+	}
 	
 	public static void main(String[] args) {
 		
@@ -101,7 +111,88 @@ public class TestMethodReturn extends TestAssertion{
 			printTestResult(System.out, PASS, "m4" , "t");
 		}
 		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.super1(1);
+			printTestResult(System.err, FAIL, "super1" , "1");
+		} catch(RuntimeException e){
+			printTestResult(System.out, PASS, "super1" , "1");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.super1(10);
+			printTestResult(System.out, PASS, "super1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "super1" , "10");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superBoth1(1);
+			printTestResult(System.err, FAIL, "superBoth1" , "1");
+		} catch(RuntimeException e){
+			printTestResult(System.out, PASS, "superBoth1" , "1");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superBoth1(10);
+			printTestResult(System.err, PASS, "superBoth1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "superBoth1" , "10");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superBoth1(30);
+			printTestResult(System.err, FAIL, "superBoth1" , "30");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "superBoth1" , "30");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superOnAll(10);
+			printTestResult(System.err, PASS, "superOnAll" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "superOnAll" , "10");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superOnAll(-3);
+			printTestResult(System.err, FAIL, "superOnAll" , "-3");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "superOnAll" , "-3");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superOnAll(50);
+			printTestResult(System.err, FAIL, "superOnAll" , "50");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "superOnAll" , "50");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mInterface1(10);
+			printTestResult(System.err, PASS, "mInterface1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "mInterface1" , "10");
+		}
+		
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mInterface1(-4);
+			printTestResult(System.err, FAIL, "mInterface1" , "-4");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "mInterface1" , "-4");
+		}
+		
 	}
+
 	
 }
 
