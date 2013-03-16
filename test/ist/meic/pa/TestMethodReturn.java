@@ -196,7 +196,7 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "superOnAll" , "50");
 		}
 
-		
+
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.mInterface1(10);
@@ -213,29 +213,6 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "mInterface1" , "-4");
 		}
 
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.mSet1(10);
-			printTestResult(System.err, PASS, "mSet1" , "10");
-		} catch(RuntimeException e){
-			printTestResult(System.err, FAIL, "mSet1" , "10");
-		}
-
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.mSet1(-10);
-			printTestResult(System.err, FAIL, "mSet1" , "-10");
-		} catch(RuntimeException e){
-			printTestResult(System.err, PASS, "mSet1" , "-10");
-		}
-
-		try{
-			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.inc1(10);
-			printTestResult(System.err, PASS, "inc1" , "10");
-		} catch(RuntimeException e){
-			printTestResult(System.err, FAIL, "inc1" , "10");
-		}
 
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
@@ -269,6 +246,29 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "superAnotated" , "200");
 		}
 
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mSet1(10);
+			printTestResult(System.err, PASS, "mSet1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "mSet1" , "10");
+		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mSet1(-10);
+			printTestResult(System.err, FAIL, "mSet1" , "-10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "mSet1" , "-10");
+		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.inc1(10);
+			printTestResult(System.err, PASS, "inc1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "inc1" , "10");
+		}
 	}
 
 }

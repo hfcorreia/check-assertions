@@ -23,14 +23,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
 			String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
-//			System.out.println("DEBUG # at method: " + methodCall.getMethodName() + " w/ assertion: " + assertionExpr);
-
 			if(assertionExpr != null) {
-				String postMethod = 
-						"if(!("+ assertionExpr + ")) {"
-								+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
-								+ "}";
-
+				String postMethod = "if(!("+ assertionExpr + ")) {"
+										+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
+									+ "}";
 				methodCall.getMethod().insertAfter(postMethod);
 			}
 		} catch (NotFoundException e) {
