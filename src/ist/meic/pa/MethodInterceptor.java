@@ -20,36 +20,46 @@ public class MethodInterceptor {
 		return "\"The assertion " + assertExpression + " is false\"";
 	}
 
-//	public String recursiveAssertExpression(CtClass ctClass, String methodName, String methodDesc) throws NotFoundException, ClassNotFoundException {
-//		if (ctClass.getSuperclass() != null) {
-//			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
-//
-//			CtMethod ctMethod;
-//			try {
-//				ctMethod = ctClass.getMethod(methodName, methodDesc);
-//			} catch (NotFoundException e) {
-//				ctMethod = null;
-//			}
-//			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
-//
-//			return r;
-//		} else {
-//			return "true";
-//		}
-//	}
+	//	public String recursiveAssertExpression(CtClass ctClass, String methodName, String methodDesc) throws NotFoundException, ClassNotFoundException {
+	//		if (ctClass.getSuperclass() != null) {
+	//			String superClassExpression = recursiveAssertExpression(ctClass.getSuperclass(), methodName, methodDesc);
+	//
+	//			CtMethod ctMethod;
+	//			try {
+	//				ctMethod = ctClass.getMethod(methodName, methodDesc);
+	//			} catch (NotFoundException e) {
+	//				ctMethod = null;
+	//			}
+	//			String r = superClassExpression + " && " + (ctMethod != null ? getAssertExpression(ctClass,ctMethod) : "true");
+	//
+	//			return r;
+	//		} else {
+	//			return "true";
+	//		}
+	//	}
 
 	public String recursiveAssert(CtClass ctClass, MethodCall methodCall) throws NotFoundException, ClassNotFoundException{
-		CtMethod ctMethod = null;
-		CtClass superclass = null;
-		String currentAssert = null;
-		String superAssert = null;
+		String currentAssert = getCurrentAssert(ctClass, methodCall);
+		String superAssert = getSuperClassAssert(ctClass, methodCall);
+		
+		String interfaceAssert = getInterfaceAssert(ctClass, methodCall);
 
-		currentAssert = getCurrentAssert(ctClass, methodCall, ctMethod, currentAssert);
-		superAssert = getSuperClassAssert(ctClass, methodCall, superclass, superAssert);
+		return getTotalAssert(currentAssert, superAssert);
+	}
 
-		String result = getTotalAssert(currentAssert, superAssert);
-
-		return result;
+	private String getInterfaceAssert(CtClass ctClass, MethodCall methodCall) {
+		String result = null;
+		try {
+			CtClass[] interfaces = ctClass.getInterfaces();
+			for(CtClass interf : interfaces) {
+				result = recursiveAssert(ctClass, methodCall);
+			}
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private String getTotalAssert(String currentAssert, String superAssert) {
@@ -68,8 +78,9 @@ public class MethodInterceptor {
 		return r;
 	}
 
-	private String getSuperClassAssert(CtClass ctClass, MethodCall methodCall, CtClass superclass, String superAssert)
-			throws ClassNotFoundException {
+	private String getSuperClassAssert(CtClass ctClass, MethodCall methodCall) throws ClassNotFoundException {
+		String superAssert = null;
+		CtClass superclass = null;
 		try {
 			superclass = ctClass.getSuperclass();
 			if(superclass != null) {
@@ -81,9 +92,11 @@ public class MethodInterceptor {
 		return superAssert;
 	}
 
-	private String getCurrentAssert(CtClass ctClass, MethodCall methodCall, CtMethod ctMethod, String currentAssert) {
+	private String getCurrentAssert(CtClass ctClass, MethodCall methodCall) {
+		String currentAssert = null;
+		CtMethod ctMethod = null;
 		try {
-			ctMethod = ctClass.getMethod(methodCall.getMethodName(), methodCall.getSignature());
+			ctMethod  = ctClass.getMethod(methodCall.getMethodName(), methodCall.getSignature());
 			currentAssert = ((Assertion) ctMethod.getAnnotation(Assertion.class)).value();
 		} catch (NotFoundException e) {
 			ctMethod = null;

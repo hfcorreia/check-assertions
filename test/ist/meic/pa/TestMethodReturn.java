@@ -59,6 +59,12 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		return x;
 	}
 
+	@Assertion("$_ > $1") 
+	public int inc1(int x) {
+		x++;
+		return x;
+	}
+
 	public static void main(String[] args) {
 
 		try{
@@ -196,7 +202,7 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		} catch(RuntimeException e){
 			printTestResult(System.err, PASS, "mInterface1" , "-4");
 		}
-		
+
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.mSet1(10);
@@ -204,7 +210,7 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		} catch(RuntimeException e){
 			printTestResult(System.err, FAIL, "mSet1" , "10");
 		}
-		
+
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.mSet1(-10);
@@ -213,8 +219,13 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "mSet1" , "-10");
 		}
 
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.inc1(10);
+			printTestResult(System.err, PASS, "inc1" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "inc1" , "10");
+		}
 	}
-
-
 }
 
