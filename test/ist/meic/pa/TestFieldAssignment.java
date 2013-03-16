@@ -44,6 +44,14 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 		
 		try {
             TestFieldAssignment fieldAssignment = new TestFieldAssignment();
+            fieldAssignment.superInvalidReadWrite2();
+            printTestResult(System.err, FAIL, "superInvalidReadWrite2", "");
+        } catch(RuntimeException e){
+            printTestResult(System.out, PASS, "superInvalidReadWrite2", "");
+        }
+		
+		try {
+            TestFieldAssignment fieldAssignment = new TestFieldAssignment();
             fieldAssignment.superValidWrite();
             printTestResult(System.out, PASS, "superValidWrite", "");
         } catch(RuntimeException e){
@@ -65,6 +73,14 @@ public class TestFieldAssignment extends TestFieldFromSuper{
           } catch(RuntimeException e){
               printTestResult(System.out, PASS, "superInvalideWrite2", "");
           }
+	      
+	      try {
+              TestFieldAssignment fieldAssignment = new TestFieldAssignment();
+              fieldAssignment.changeSx();
+              printTestResult(System.out, PASS, "changeSx", "");
+          } catch(RuntimeException e){
+              printTestResult(System.err, FAIL, "changeSx", "");
+          }
 	}
 	
 	public void validInit(){
@@ -80,15 +96,19 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 	}
 	
 	public void superInvalidWrite() {
-	    x = 10000;
+	    super.x = 10000;
 	}
 	
 	public void superValidWrite() {
-        x = 10;
+        super.x = 10;
     }
 	
 	public void superInvalidReadWrite() {
-        x++;
+        super.x++;
+    }
+	
+	public void superInvalidReadWrite2() {
+        ++super.x;
     }
 	
 	public void superInvalideWrite2() {
