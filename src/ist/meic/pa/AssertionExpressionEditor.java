@@ -22,11 +22,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
-			if(methodCall.getMethod().hasAnnotation(Assertion.class)){
-//                String assertionExpr = methodInterceptor.recursiveAssertExpression(ctClass, methodCall.getMethodName(), methodCall.getSignature());
-				String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
-//				System.out.println("DEBUG # " + assertionExpr + " vs " + mineExp);
+			String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
+//			System.out.println("DEBUG # at method: " + methodCall.getMethodName() + " w/ assertion: " + assertionExpr);
 
+			if(assertionExpr != null) {
 				String postMethod = 
 						"if(!("+ assertionExpr + ")) {"
 								+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"

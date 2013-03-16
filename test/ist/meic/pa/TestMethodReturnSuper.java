@@ -17,4 +17,9 @@ public class TestMethodReturnSuper extends TestMethodReturnSuperSuper {
 		return x;
 	}
 	
+	@Assertion("$1 > 0")
+	public int superAnotated(int x) {
+		return x;
+	}
+	
 }

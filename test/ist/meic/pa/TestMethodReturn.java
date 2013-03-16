@@ -13,7 +13,7 @@ package ist.meic.pa;
  */
 
 
-public class TestMethodReturn extends TestMethodReturnSuper implements TestMethodReturnInterface {
+public class TestMethodReturn extends TestMethodReturnSuper implements TestMethodReturnInterface1, TestMethodReturnInterface2 {
 
 	int testField = 30;
 
@@ -43,6 +43,10 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		return x;
 	}
 
+	public int superAnotated(int x) {
+		return x;
+	}
+
 	@Assertion("$1!=50") 
 	public int superOnAll(int x) {
 		return x;
@@ -63,6 +67,11 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	public int inc1(int x) {
 		x++;
 		return x;
+	}
+
+	@Override
+	public int mInterfaceBoth(int x) {
+		return 0;
 	}
 
 	public static void main(String[] args) {
@@ -187,6 +196,7 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "superOnAll" , "50");
 		}
 
+		
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.mInterface1(10);
@@ -226,6 +236,40 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		} catch(RuntimeException e){
 			printTestResult(System.err, FAIL, "inc1" , "10");
 		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mInterfaceBoth(10);
+			printTestResult(System.err, PASS, "mInterfaceBoth" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "mInterfaceBoth" , "10");
+		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.mInterfaceBoth(200);
+			printTestResult(System.err, FAIL, "mInterfaceBoth" , "200");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "mInterfaceBoth" , "200");
+		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superAnotated(10);
+			printTestResult(System.err, PASS, "superAnotated" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "superAnotated" , "10");
+		}
+
+		try{
+			TestMethodReturn methodReturn = new TestMethodReturn();
+			methodReturn.superAnotated(-10);
+			printTestResult(System.err, FAIL, "superAnotated" , "200");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "superAnotated" , "200");
+		}
+
 	}
+
 }
 

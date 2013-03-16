@@ -38,28 +38,34 @@ public class MethodInterceptor {
 	//		}
 	//	}
 
-	public String recursiveAssert(CtClass ctClass, MethodCall methodCall) throws NotFoundException, ClassNotFoundException{
+	public String recursiveAssert(CtClass ctClass, MethodCall methodCall) {
 		String currentAssert = getCurrentAssert(ctClass, methodCall);
 		String superAssert = getSuperClassAssert(ctClass, methodCall);
-		
+
 		String interfaceAssert = getInterfaceAssert(ctClass, methodCall);
 
-		return getTotalAssert(currentAssert, superAssert);
+		String noInterf = getTotalAssert(currentAssert, superAssert);
+		String debug = getTotalAssert(interfaceAssert, noInterf);
+//		System.out.println("#DEBUG # returned assert: " + methodCall.getMethodName() +  " " + noInterf +  " " + debug);
+		
+		return debug;
 	}
 
 	private String getInterfaceAssert(CtClass ctClass, MethodCall methodCall) {
 		String result = null;
+		methodCall.where().getClass();
+		CtClass[] interfaces = null;
 		try {
-			CtClass[] interfaces = ctClass.getInterfaces();
-			for(CtClass interf : interfaces) {
-				result = recursiveAssert(ctClass, methodCall);
-			}
+			interfaces  = ctClass.getInterfaces();
 		} catch (NotFoundException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
-		return null;
+		for(CtClass interf : interfaces) {
+			String interfaceAssert = recursiveAssert(interf, methodCall);
+			result = getTotalAssert(result, interfaceAssert);
+		}
+
+		return result;
 	}
 
 	private String getTotalAssert(String currentAssert, String superAssert) {
@@ -78,7 +84,7 @@ public class MethodInterceptor {
 		return r;
 	}
 
-	private String getSuperClassAssert(CtClass ctClass, MethodCall methodCall) throws ClassNotFoundException {
+	private String getSuperClassAssert(CtClass ctClass, MethodCall methodCall) {
 		String superAssert = null;
 		CtClass superclass = null;
 		try {
@@ -97,7 +103,9 @@ public class MethodInterceptor {
 		CtMethod ctMethod = null;
 		try {
 			ctMethod  = ctClass.getMethod(methodCall.getMethodName(), methodCall.getSignature());
-			currentAssert = ((Assertion) ctMethod.getAnnotation(Assertion.class)).value();
+			if(ctMethod.hasAnnotation(Assertion.class)) {
+				currentAssert = ((Assertion) ctMethod.getAnnotation(Assertion.class)).value();
+			}
 		} catch (NotFoundException e) {
 			ctMethod = null;
 		} catch (ClassNotFoundException e) {
