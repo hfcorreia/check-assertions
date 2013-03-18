@@ -3,6 +3,7 @@ package ist.meic.pa;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
+import javassist.expr.ConstructorCall;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 import javassist.expr.MethodCall;
@@ -22,11 +23,12 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(MethodCall methodCall) throws CannotCompileException {
 		try {
+//			System.out.println("MethodCall w/ method: " + methodCall.getMethodName());
 			String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
 			if(assertionExpr != null) {
 				String postMethod = "if(!("+ assertionExpr + ")) {"
-										+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
-									+ "}";
+						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
+						+ "}";
 				methodCall.getMethod().insertAfter(postMethod);
 			}
 		} catch (NotFoundException e) {
@@ -38,6 +40,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	@Override
 	public void edit(FieldAccess fieldAccess) throws CannotCompileException {
+//		System.out.println("FieldAcess w/ field: " + fieldAccess.getFieldName());
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
@@ -60,4 +63,30 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
+	@Override
+	public void edit(ConstructorCall constructorCall) {
+		System.out.println("ConstructorCall w/ cena: " + constructorCall.getSignature() + " " + constructorCall.getMethodName());
+		try {
+			Assertion anot = (Assertion) constructorCall.getConstructor().getAnnotation(Assertion.class);
+			String assertionExpr = anot != null ? anot.value() : null;
+			
+			System.out.println("const cal? " + constructorCall.getClassName());
+			System.out.println("constructor? " + constructorCall.getConstructor().getLongName());
+			System.out.println("anot null? " + anot);
+			System.out.println("ASSERTION: " + assertionExpr);
+			
+			if(assertionExpr != null) {
+				String postMethod = "if(!("+ assertionExpr + ")) {"
+						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
+						+ "}";
+				constructorCall.getMethod().insertBefore(postMethod);
+			}
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 }

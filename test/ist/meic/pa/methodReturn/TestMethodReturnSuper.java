@@ -1,4 +1,6 @@
-package ist.meic.pa;
+package ist.meic.pa.methodReturn;
+
+import ist.meic.pa.Assertion;
 
 public class TestMethodReturnSuper extends TestMethodReturnSuperSuper {
 

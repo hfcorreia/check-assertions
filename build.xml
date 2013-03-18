@@ -35,7 +35,7 @@
 	<target name="test-methodReturn" depends="compile"
 		description="Tests if the return of the methods is valid.">
 		<java classname="${main}" fork="true">
-			<arg value="${base}.TestMethodReturn" />
+			<arg value="${base}.methodReturn.TestMethodReturn" />
 			<arg value="method" />
 			<classpath refid="project.classpath" />
 		</java>
@@ -59,6 +59,15 @@
 		</java>
 	</target>
 
+		<target name="test-constructor" depends="compile"
+		description="Tests if the return of the methods is valid.">
+		<java classname="${main}" fork="true">
+			<arg value="${base}.constructor.TestConstructor" />
+			<arg value="method" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+	
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
         <delete dir="ist" />

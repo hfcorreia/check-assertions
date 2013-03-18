@@ -7,14 +7,14 @@ import javassist.expr.MethodCall;
 
 public class MethodInterceptor {
 
-	public String createMethodBody(final String assertExpression) {
-		return "{ " 
-				+ "$_ = $proceed($$); " 
-				+ "if(!(" + assertExpression + ")) {"
-				+	 	"throw new java.lang.RuntimeException("+ createErrorMessage(assertExpression) + ");"
-				+ "}" 
-				+"}";
-	}
+//	public String createMethodBody(final String assertExpression) {
+//		return "{ " 
+//				+ "$_ = $proceed($$); " 
+//				+ "if(!(" + assertExpression + ")) {"
+//				+	 	"throw new java.lang.RuntimeException("+ createErrorMessage(assertExpression) + ");"
+//				+ "}" 
+//				+"}";
+//	}
 
 	public String createErrorMessage(String assertExpression) {
 		return "\"The assertion " + assertExpression + " is false\"";
@@ -121,8 +121,8 @@ public class MethodInterceptor {
 	//				return null;
 	//			}
 	//		}
-
-	private String getAssertExpression(CtClass ctClass,	CtMethod ctMethod) throws ClassNotFoundException {
-		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod.getAnnotation(Assertion.class)).value() : "";
-	}
+//
+//	private String getAssertExpression(CtClass ctClass,	CtMethod ctMethod) throws ClassNotFoundException {
+//		return ctMethod.hasAnnotation(Assertion.class) ? ((Assertion) ctMethod.getAnnotation(Assertion.class)).value() : "";
+//	}
 }
