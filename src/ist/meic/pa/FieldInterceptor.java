@@ -7,7 +7,6 @@ import javassist.NotFoundException;
 
 public class FieldInterceptor {
 
-	//criar variavel que verirfica se o campo ja foi inicializado
 	public void createAuxiliaryFields(CtClass ctClass, CtField ctField) throws CannotCompileException, NotFoundException {
 		String fieldName = ctField.getName();
 
@@ -21,14 +20,11 @@ public class FieldInterceptor {
 			ctClass.addField(isInitializedTempField);
 			ctClass.addField(tmpValueField);
 		}
-		
-
 	}
 
 	private boolean existsFields(CtClass ctClass, String fieldName) {
 		try {
 			ctClass.getField(fieldName);
-			
 			return true;
 		} catch(NotFoundException nfe) {
 			return false;

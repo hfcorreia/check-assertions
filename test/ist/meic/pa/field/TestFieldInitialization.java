@@ -1,6 +1,7 @@
 package ist.meic.pa.field;
 
 import ist.meic.pa.Assertion;
+import ist.meic.pa.TestAssertion;
 
 public class TestFieldInitialization extends TestAssertion{
 	

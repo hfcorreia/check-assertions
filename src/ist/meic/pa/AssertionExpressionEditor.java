@@ -3,10 +3,7 @@ package ist.meic.pa;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
-import javassist.expr.ConstructorCall;
-import javassist.expr.ExprEditor;
-import javassist.expr.FieldAccess;
-import javassist.expr.MethodCall;
+import javassist.expr.*;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
@@ -26,9 +23,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 //			System.out.println("MethodCall w/ method: " + methodCall.getMethodName());
 			String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
 			if(assertionExpr != null) {
-				String postMethod = "if(!("+ assertionExpr + ")) {"
-						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
-						+ "}";
+				String postMethod = methodInterceptor.createMethodBody(assertionExpr);
 				methodCall.getMethod().insertAfter(postMethod);
 			}
 		} catch (NotFoundException e) {
@@ -89,4 +84,24 @@ public class AssertionExpressionEditor extends ExprEditor {
 			e.printStackTrace();
 		}
 	}
+//	
+//	@Override
+//	public void edit(NewArray newArray) {
+//		
+//	}
+//	
+//	@Override
+//	public void edit(Cast c) {
+//		
+//	}
+//	
+//	@Override
+//	public void edit(Handler handler) {
+//		
+//	}
+//	
+//	@Override
+//	public void edit(NewExpr expr) {
+//		
+//	}
 }
