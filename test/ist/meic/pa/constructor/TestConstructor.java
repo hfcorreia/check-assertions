@@ -10,9 +10,7 @@ public class TestConstructor extends TestAssertion {
 
 	@Assertion("$1 > 0")
 	public TestConstructor(int field) {
-		System.out.println("ENTREI");
 		this.field = field;
-		System.out.println("SAI");
 	}
 
 	public TestConstructor() {}
@@ -20,10 +18,17 @@ public class TestConstructor extends TestAssertion {
 	public static void main(String[] args) {
 
 		try{
-			TestConstructor constructor = new TestConstructor(-10);
+			new TestConstructor(-10);
 			printTestResult(System.err, FAIL, "constructor" , "-10");
 		} catch(RuntimeException e){
 			printTestResult(System.err, PASS, "constructor" , "-10");
+		}
+		
+		try{
+			new TestConstructor(10);
+			printTestResult(System.err, PASS, "constructor" , "10");
+		} catch(RuntimeException e){
+			printTestResult(System.err, FAIL, "constructor" , "10");
 		}
 	}	
 }

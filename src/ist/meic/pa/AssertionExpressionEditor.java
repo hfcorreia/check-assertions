@@ -1,6 +1,7 @@
 package ist.meic.pa;
 
 import javassist.CannotCompileException;
+import javassist.CtBehavior;
 import javassist.CtClass;
 import javassist.NotFoundException;
 import javassist.expr.*;
@@ -62,23 +63,17 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(ConstructorCall constructorCall) {
 //		System.out.println("ConstructorCall w/ cena: " + constructorCall.getSignature() + " " + constructorCall.getMethodName());
 		try {
-			Assertion anot = (Assertion) constructorCall.getConstructor().getAnnotation(Assertion.class);
-			String assertionExpr = anot != null ? anot.value() : null;
+			CtBehavior constructor = constructorCall.where();
+			Assertion annotation = (Assertion) constructor.getAnnotation(Assertion.class);
+			String assertionExpression = annotation != null ? annotation.value() : null;
 			
-//			System.out.println("const cal? " + constructorCall.getClassName());
-//			System.out.println("constructor? " + constructorCall.getConstructor().getLongName());
-//			System.out.println("anot null? " + anot);
-//			System.out.println("ASSERTION: " + assertionExpr);
-			
-			if(assertionExpr != null) {
-				String postMethod = "if(!("+ assertionExpr + ")) {"
-						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
+			if(assertionExpression != null) {
+				String constructorVerification = "if(!("+ assertionExpression + ")) {"
+						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpression + " is false\");"
 						+ "}";
-				constructorCall.getMethod().insertBefore(postMethod);
+				constructor.insertBefore(constructorVerification);
 			}
 		} catch (CannotCompileException e) {
-			e.printStackTrace();
-		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
