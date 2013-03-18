@@ -1,7 +1,7 @@
 package ist.meic.pa.methodReturn;
 
 import ist.meic.pa.Assertion;
-import ist.meic.pa.TestAssertion;
+import ist.meic.pa.field.TestAssertion;
 
 public class TestMethodReturnSuperSuper extends TestAssertion {
 

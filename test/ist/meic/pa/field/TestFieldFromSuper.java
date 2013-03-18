@@ -1,4 +1,6 @@
-package ist.meic.pa;
+package ist.meic.pa.field;
+
+import ist.meic.pa.Assertion;
 
 public class TestFieldFromSuper extends TestAssertion {
 

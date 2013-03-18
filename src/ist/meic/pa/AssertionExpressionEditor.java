@@ -65,15 +65,15 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	@Override
 	public void edit(ConstructorCall constructorCall) {
-		System.out.println("ConstructorCall w/ cena: " + constructorCall.getSignature() + " " + constructorCall.getMethodName());
+//		System.out.println("ConstructorCall w/ cena: " + constructorCall.getSignature() + " " + constructorCall.getMethodName());
 		try {
 			Assertion anot = (Assertion) constructorCall.getConstructor().getAnnotation(Assertion.class);
 			String assertionExpr = anot != null ? anot.value() : null;
 			
-			System.out.println("const cal? " + constructorCall.getClassName());
-			System.out.println("constructor? " + constructorCall.getConstructor().getLongName());
-			System.out.println("anot null? " + anot);
-			System.out.println("ASSERTION: " + assertionExpr);
+//			System.out.println("const cal? " + constructorCall.getClassName());
+//			System.out.println("constructor? " + constructorCall.getConstructor().getLongName());
+//			System.out.println("anot null? " + anot);
+//			System.out.println("ASSERTION: " + assertionExpr);
 			
 			if(assertionExpr != null) {
 				String postMethod = "if(!("+ assertionExpr + ")) {"

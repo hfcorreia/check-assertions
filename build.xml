@@ -44,7 +44,7 @@
 	<target name="test-fieldAssignment" depends="compile"
 		description="Tests if the field annotations are valid.">
 		<java classname="${main}" fork="true">
-			<arg value="${base}.TestFieldAssignment" />
+			<arg value="${base}.field.TestFieldAssignment" />
 			<arg value="field" />
 			<classpath refid="project.classpath" />
 		</java>
@@ -53,7 +53,7 @@
 	<target name="test-fieldInitialization" depends="compile"
 		description="Tests if the field with annotation are initialed.">
 		<java classname="${main}" fork="true">
-			<arg value="${base}.TestFieldInitialization" />
+			<arg value="${base}.field.TestFieldInitialization" />
 			<arg value="field" />
 			<classpath refid="project.classpath" />
 		</java>
@@ -73,7 +73,7 @@
         <delete dir="ist" />
 	</target>
 	
-	<target name="test-all" description="Runs all the tests" depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn"></target>
+	<target name="test-all" description="Runs all the tests" depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn, test-constructor"></target>
 	    
 
 </project>

@@ -1,7 +1,7 @@
 package ist.meic.pa.constructor;
 
 import ist.meic.pa.Assertion;
-import ist.meic.pa.TestAssertion;
+import ist.meic.pa.field.TestAssertion;
 import ist.meic.pa.methodReturn.TestMethodReturn;
 
 public class TestConstructor extends TestAssertion {
