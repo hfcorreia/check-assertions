@@ -2,6 +2,9 @@ package ist.meic.pa.methodReturn;
 
 import ist.meic.pa.Assertion;
 
+/*
+ * brincar com modificadores
+ */
 
 public class TestMethodReturn extends TestMethodReturnSuper implements TestMethodReturnInterface1, TestMethodReturnInterface2 {
 
