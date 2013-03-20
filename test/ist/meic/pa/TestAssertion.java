@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 public class TestAssertion {
 
 	protected final static String PASS = "pass";
-	protected final static String FAIL = "fail";
+	protected final static String FAIL = " !!!! @@@@ ##### FAIL #### @@@@ !!!!";
 
 	/*
 	 * metodo para tratar de falhas (detectadas por excepccao por ex?) e passados => contabilizar passados/falhados e mostrar no fim
