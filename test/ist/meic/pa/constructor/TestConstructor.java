@@ -1,10 +1,8 @@
 package ist.meic.pa.constructor;
 
 import ist.meic.pa.Assertion;
-import ist.meic.pa.TestAssertion;
-import ist.meic.pa.methodReturn.TestMethodReturn;
 
-public class TestConstructor extends TestAssertion {
+public class TestConstructor extends TestConstructorSuper {
 
 	int field = 4;
 
@@ -29,6 +27,13 @@ public class TestConstructor extends TestAssertion {
 			printTestResult(System.err, PASS, "constructor" , "10");
 		} catch(RuntimeException e){
 			printTestResult(System.err, FAIL, "constructor" , "10");
+		}
+		
+		try{
+			new TestConstructor(200);
+			printTestResult(System.err, FAIL, "constructor" , "200");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "constructor" , "200");
 		}
 	}	
 }
