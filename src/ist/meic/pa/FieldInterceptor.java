@@ -11,7 +11,6 @@ public class FieldInterceptor {
 		String fieldName = ctField.getName();
 
 		if (! existsFields(ctClass, fieldName + "$isInitialized") ) {
-
 			CtField isInitializedField = new CtField(CtClass.booleanType, fieldName + "$isInitialized", ctClass);
 			CtField isInitializedTempField = new CtField(CtClass.booleanType, fieldName + "$isInitializedTemp", ctClass);
 			CtField tmpValueField = new CtField(ctClass.getField(fieldName).getType(), fieldName + "$tmpValue", ctClass);
@@ -33,11 +32,11 @@ public class FieldInterceptor {
 
 	public String createReadFieldBody(String fieldName) {
 		return 	"{ " +
-				"if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
-				"throw new java.lang.RuntimeException(\"Error: " + fieldName + "was not initialized\");" + 
-				"} else {" + 
-				"$_ = $proceed(); " + 
-				"}" +
+				"   " + "if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
+				"   " + "   " + "throw new java.lang.RuntimeException(\"Error: " + fieldName + "was not initialized\");" + 
+				"   " + "} else {" + 
+				"   " + "   " + " $_ = $proceed(); " + 
+				"   " + "}" +
 				"}";
 	}
 

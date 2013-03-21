@@ -9,10 +9,13 @@ public class TestArrayInitializer extends TestAssertion {
     }
 
     @Assertion("strings.length == 2")
-    String[] strings ;
+    int[] strings ;
 
     public void testArray() {
-        strings = new String[2];
+        strings = new int[2];
+        strings[1] = 1;
+        int x = strings[1];
+        System.out.println("prining " + x);
     }
 
     public static void main(String[] args) {
@@ -21,6 +24,7 @@ public class TestArrayInitializer extends TestAssertion {
             test.testArray();
             printTestResult(System.out, PASS, "testArray", "");
         } catch(RuntimeException e){
+            e.printStackTrace();
             printTestResult(System.err, FAIL, "testArray", "");
         }
 
