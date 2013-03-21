@@ -76,13 +76,23 @@
 	            <classpath refid="project.classpath" />
 	        </java>
 	    </target>
+
+		<target name="test-cast" depends="compile"
+		description="Tests if the casts are valid.">
+		<java classname="${main}" fork="true">
+			<arg value="${base}.cast.TestCast" />
+			<arg value="method" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
+	
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
         <delete dir="ist" />
 	</target>
 	
 	<target name="test-all" description="Runs all the tests" 
-		depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn,test-constructor,test-arrayInitializer"></target>
+		depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn,test-constructor,test-arrayInitializer,test-cast"></target>
 	    
 
 </project>
