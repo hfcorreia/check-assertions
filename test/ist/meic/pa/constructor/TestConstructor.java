@@ -33,7 +33,7 @@ public class TestConstructor extends TestConstructorSuper {
 			new TestConstructor(200);
 			printTestResult(System.err, FAIL, "constructor" , "200");
 		} catch(RuntimeException e){
-			printTestResult(System.err, PASS, "constructor" , "200");
+			System.out.println(e.getMessage());
 		}
 	}	
 }

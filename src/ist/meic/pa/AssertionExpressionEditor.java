@@ -88,6 +88,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	@Override
 	public void edit(Handler handler) {
-//		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
+		if(handler.where().getDeclaringClass().hasAnnotation(ExceptionAssertion.class)) {
+			System.out.println("class anotated w/ assertion cool");
+//			handler.insertBefore("");
+		}
+		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
 	}
 }

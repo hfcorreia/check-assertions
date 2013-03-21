@@ -75,9 +75,18 @@ public class AssertionsTranslator implements Translator {
 			Assertion annotation = (Assertion) ctConstructor.getAnnotation(Assertion.class);
 			String currentAssertion = annotation != null ? annotation.value() : null;
 
-			String superClassAssertion = getSuperConstructorExpression(ctConstructor);
+			CtClass superClass;
+			String superClassAssertion;
+			try {
+				superClass = ctConstructor.getDeclaringClass().getSuperclass();
+				superClassAssertion = getSuperConstructorExpression(superClass.getConstructor(ctConstructor.getSignature()));
+			} catch (NotFoundException e) {
+				superClassAssertion = null;
+			}
+			
 			String assertionExpression = getTotalAssert(currentAssertion, superClassAssertion);
 
+			
 			if(assertionExpression != null) {
 				String constructorVerification = "if(!("+ assertionExpression + ")) {"
 						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpression + " is false\");"
@@ -89,7 +98,7 @@ public class AssertionsTranslator implements Translator {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	private String getSuperConstructorExpression(CtConstructor ctConstructor) {
