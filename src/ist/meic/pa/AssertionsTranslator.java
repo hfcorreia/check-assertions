@@ -4,7 +4,6 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtConstructor;
-import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
@@ -38,8 +37,6 @@ public class AssertionsTranslator implements Translator {
 	private void assertionVerifier(CtClass ctClass, CtMethod ctMethod)
 			throws NotFoundException {
 		String assertion = recursiveAssert(ctClass, ctMethod);
-		// System.out.println("ASSERT: " + ctMethod.getName() + "  " +
-		// assertion);
 
 		if ( assertion != null && ctClass!=null && !isAbstractMethod(ctMethod) ) {
 			try {
@@ -74,7 +71,6 @@ public class AssertionsTranslator implements Translator {
 
 			String superClassAssertion = getSuperConstructorExpression(ctConstructor);
 			String assertionExpression = getTotalAssert(currentAssertion, superClassAssertion);
-			System.out.println("SUPER ASSERT : " + assertionExpression);
 
 			if(assertionExpression != null) {
 				String constructorVerification = "if(!("+ assertionExpression + ")) {"
@@ -115,8 +111,6 @@ public class AssertionsTranslator implements Translator {
 	
 	
 	public String recursiveAssert(CtClass ctClass, CtMethod ctMethod) {
-//		System.out.println("recursive Assert: " + ctClass + " " + ctMethod);
-		
 		String currentAssert = getCurrentAssert(ctClass, ctMethod);
 
 		String superAssert = getSuperClassAssert(ctClass, ctMethod);
@@ -199,30 +193,4 @@ public class AssertionsTranslator implements Translator {
 		}
 		return currentAssert;
 	}
-
-	// private String createMethodBody(String methodName, String assertionExpr)
-	// {
-	// //verificacao esta a ser feita antes.....
-	//
-	// return "{ "+
-	// "if(!("+ assertionExpr + ")) {"
-	// + "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr
-	// + " is false\");"
-	// + "}" +
-	// "else {" +
-	// "return " + methodName + "$auxiliar($$); " +
-	// "}" +
-	// "}";
-
-	// return "{" +
-	// "Object return$value = " + methodName + "$auxiliar($$);" +
-	// "if(!("+ assertionExpr.replaceAll("$_", "($r)return$value") + ")) {"
-	// + "throw new java.lang.RuntimeException(\"The assertion " + "" +
-	// " is false\");" +
-	// "}" +
-	// "else {" +
-	// "return ($r)return$value; " +
-	// "}" +
-	// "}";
-	// }
 }
