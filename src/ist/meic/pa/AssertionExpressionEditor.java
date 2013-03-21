@@ -10,12 +10,10 @@ import javassist.expr.FieldAccess;
 public class AssertionExpressionEditor extends ExprEditor {
 
     private CtClass ctClass;
-    private MethodInterceptor methodInterceptor;
     private FieldInterceptor fieldInterceptor;
 
     public AssertionExpressionEditor(CtClass ctClass) {
         this.ctClass = ctClass;
-        this.methodInterceptor = new MethodInterceptor();
         this.fieldInterceptor = new FieldInterceptor();
     }
 
