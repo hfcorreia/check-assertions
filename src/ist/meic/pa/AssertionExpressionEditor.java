@@ -20,7 +20,6 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	@Override
 	public void edit(FieldAccess fieldAccess) throws CannotCompileException {
-		//		System.out.println("FieldAcess w/ field: " + fieldAccess.getFieldName());
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
@@ -47,8 +46,9 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(Cast castExpression) {
 		try {
 			String[] assertions = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
-			
+
 			String replacingCastExpr = "if(" + generateIfCastCondition(castExpression, assertions) + ") {" + "$_ = $proceed($$);" + "}" + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
+
 			castExpression.replace(replacingCastExpr);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
@@ -61,7 +61,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	private String generateIfCastCondition(Cast castExpression, String[] assertions) throws NotFoundException {
 		String assertion = null;
-		
+
 		for(String s : assertions) {
 			if(s.equals(castExpression.getType().getName())) {
 				assertion = castExpression.getType().getName();
@@ -85,9 +85,9 @@ public class AssertionExpressionEditor extends ExprEditor {
 	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
 		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
 	}
-	
+
 	@Override
 	public void edit(Handler handler) {
-		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
+//		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
 	}
 }

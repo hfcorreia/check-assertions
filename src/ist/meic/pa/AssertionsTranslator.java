@@ -2,9 +2,9 @@ package ist.meic.pa;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
+import javassist.CodeConverter;
 import javassist.CtClass;
 import javassist.CtConstructor;
-import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
@@ -12,33 +12,37 @@ import javassist.NotFoundException;
 import javassist.Translator;
 
 public class AssertionsTranslator implements Translator {
+	private static final String ARRAY_INTERCEPTOR = "ist.meic.pa.ArrayInterceptor";
 
 	@Override
 	public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
 		CtClass ctClass = pool.get(className);
-		ctClass.instrument(new AssertionExpressionEditor(ctClass));
+		if (!className.equals(ARRAY_INTERCEPTOR)) {
+			CodeConverter conv = new CodeConverter();
+			CtClass arrayClass = pool.get(ARRAY_INTERCEPTOR);
 
-		for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
-			assertionVerifier(ctClass, ctMethod);
+			conv.replaceArrayAccess(arrayClass, new CodeConverter.DefaultArrayAccessReplacementMethodNames());
+			ctClass.instrument(conv);
+			ctClass.instrument(new AssertionExpressionEditor(ctClass));
+
+			for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
+				assertionVerifier(ctClass, ctMethod);
+			}
+
+			for (CtConstructor ctConstructor : ctClass.getConstructors()) {
+				assertionVerifier(ctConstructor);
+			}
 		}
-
-		for (CtConstructor ctConstructor : ctClass.getConstructors()) {
-			assertionVerifier(ctConstructor);
-		}
-
 	}
 
 	@Override
-	public void start(ClassPool arg0) throws NotFoundException,
-			CannotCompileException {
+	public void start(ClassPool arg0) throws NotFoundException, CannotCompileException {
 		// do nothing
 	}
 
 	private void assertionVerifier(CtClass ctClass, CtMethod ctMethod)
 			throws NotFoundException {
 		String assertion = recursiveAssert(ctClass, ctMethod);
-		// System.out.println("ASSERT: " + ctMethod.getName() + "  " +
-		// assertion);
 
 		if ( assertion != null && ctClass!=null && !isAbstractMethod(ctMethod) ) {
 			try {
@@ -49,10 +53,10 @@ public class AssertionsTranslator implements Translator {
 						ctClass, null);
 				auxiliarMethod.setBody(
 						" { " +
-						"	" + ctMethod.getReturnType().getName() + " $_ = " + ctMethod.getName() + "($$);" +
-						"	" + "if( ! ( " + assertion + " ) ) { " +
-						"	" + "	"  + "throw new java.lang.RuntimeException(\"\");" +
-						"	" + "}" + "	" + "return ($r)$_;" + 
+								"	" + ctMethod.getReturnType().getName() + " $_ = " + ctMethod.getName() + "($$);" +
+								"	" + "if( ! ( " + assertion + " ) ) { " +
+								"	" + "	"  + "throw new java.lang.RuntimeException(\"\");" +
+								"	" + "}" + "	" + "return ($r)$_;" + 
 						" } ");
 				ctClass.addMethod(auxiliarMethod);
 			} catch (CannotCompileException e1) {
@@ -73,7 +77,6 @@ public class AssertionsTranslator implements Translator {
 
 			String superClassAssertion = getSuperConstructorExpression(ctConstructor);
 			String assertionExpression = getTotalAssert(currentAssertion, superClassAssertion);
-//			System.out.println("SUPER ASSERT : " + assertionExpression);
 
 			if(assertionExpression != null) {
 				String constructorVerification = "if(!("+ assertionExpression + ")) {"
@@ -88,7 +91,7 @@ public class AssertionsTranslator implements Translator {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private String getSuperConstructorExpression(CtConstructor ctConstructor) {
 		String currentAssert = null;
 		String superAssert = null;
@@ -111,11 +114,9 @@ public class AssertionsTranslator implements Translator {
 
 		return getTotalAssert(currentAssert, superAssert);
 	}
-	
-	
-	public String recursiveAssert(CtClass ctClass, CtMethod ctMethod) {
-//		System.out.println("recursive Assert: " + ctClass + " " + ctMethod);
-		
+
+
+	public String recursiveAssert(CtClass ctClass, CtMethod ctMethod) {		
 		String currentAssert = getCurrentAssert(ctClass, ctMethod);
 
 		String superAssert = getSuperClassAssert(ctClass, ctMethod);
@@ -199,29 +200,4 @@ public class AssertionsTranslator implements Translator {
 		return currentAssert;
 	}
 
-	// private String createMethodBody(String methodName, String assertionExpr)
-	// {
-	// //verificacao esta a ser feita antes.....
-	//
-	// return "{ "+
-	// "if(!("+ assertionExpr + ")) {"
-	// + "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr
-	// + " is false\");"
-	// + "}" +
-	// "else {" +
-	// "return " + methodName + "$auxiliar($$); " +
-	// "}" +
-	// "}";
-
-	// return "{" +
-	// "Object return$value = " + methodName + "$auxiliar($$);" +
-	// "if(!("+ assertionExpr.replaceAll("$_", "($r)return$value") + ")) {"
-	// + "throw new java.lang.RuntimeException(\"The assertion " + "" +
-	// " is false\");" +
-	// "}" +
-	// "else {" +
-	// "return ($r)return$value; " +
-	// "}" +
-	// "}";
-	// }
 }
