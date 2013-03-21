@@ -1,5 +1,7 @@
 package ist.meic.pa.methodReturn;
 
+import java.io.PrintStream;
+
 import ist.meic.pa.Assertion;
 
 /*
@@ -12,7 +14,7 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 
 	public TestMethodReturn() {}
 
-	@Assertion("$1>2") 
+	@Assertion("$1>0") 
 	public int m1(int x) {
 		return x;
 	}
@@ -21,7 +23,6 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	public int m2(int x) {
 		return x;
 	}
-
 	@Assertion("$1 + $2 < $_") 
 	public int m3(int x, int y) {
 		return x + y + 1;
@@ -31,7 +32,6 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	public String m4(String s) {
 		return s;
 	}
-
 
 	@Assertion("$1>2") 
 	public int superBoth1(int x) {
@@ -70,21 +70,24 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	}
 
 	public static void main(String[] args) {
-
+		String PASS = "passei";
+		String FAIL = "falhei";
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m1(10);
 			printTestResult(System.out, PASS, "m1", "10");
 		} catch(RuntimeException e){
+			System.out.println("bela merda");
+
 			printTestResult(System.err, FAIL, "m1", "10");
 		}
 
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
-			methodReturn.m1(1);
-			printTestResult(System.err, FAIL, "m1", "1");
+			methodReturn.m1(-1);
+			printTestResult(System.err, FAIL, "m1", "-1");
 		} catch(RuntimeException e){
-			printTestResult(System.out, PASS, "m1", "1");
+			printTestResult(System.out, PASS, "m1", "-1");
 		}
 
 		try{
@@ -264,6 +267,12 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 		} catch(RuntimeException e){
 			printTestResult(System.err, FAIL, "inc1" , "10");
 		}
+
 	}
+
+//	private static void printTestResult(PrintStream out, String pASS,
+//			String string, String string2) {
+//		System.out.println(pASS + string + string2);
+//	}
 }
 
