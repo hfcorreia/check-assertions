@@ -5,7 +5,7 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
-
+import javassist.expr.NewArray;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
@@ -20,16 +20,15 @@ public class AssertionExpressionEditor extends ExprEditor {
     @Override
     public void edit(FieldAccess fieldAccess) throws CannotCompileException {
         try {
-            if(fieldAccess.getField().hasAnnotation(Assertion.class)){
+            if (fieldAccess.getField().hasAnnotation(Assertion.class) ) {
                 fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
 
                 Assertion assertion = (Assertion) fieldAccess.getField().getAnnotation(Assertion.class);
 
-                if(fieldAccess.isWriter()){
+                if (fieldAccess.isWriter()) {
                     fieldAccess.replace(fieldInterceptor.createWriteFieldBody(assertion.value(), fieldAccess.getFieldName()));
-                } 
-                else {
-                    if(fieldAccess.isReader()) {
+                } else {
+                    if (fieldAccess.isReader()) {
                         fieldAccess.replace(fieldInterceptor.createReadFieldBody(fieldAccess.getFieldName()));
                     }
                 }
@@ -40,5 +39,12 @@ public class AssertionExpressionEditor extends ExprEditor {
             e.printStackTrace();
         }
     }
-}
 
+    @Override
+    public void edit(NewArray newArray) {
+        int arrayDimension = newArray.getDimension();
+        for (int i = 0; i < arrayDimension; i++) {
+
+        }
+    }
+}
