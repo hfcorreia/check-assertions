@@ -3,11 +3,11 @@ package ist.meic.pa.cast;
 import ist.meic.pa.CastAssertion;
 import ist.meic.pa.TestAssertion;
 
-@CastAssertion("ist.meic.pa.TestAssertion")
+@CastAssertion({"ist.meic.pa.TestAssertion", "ist.meic.pa.cast.TestCastSuper"})
 public class TestCast extends TestCastSuper {
 
-	public static Object m1(Object obj1) {
-		return obj1;
+	public static Object m1(Object obj) {
+		return obj;
 	}
 	
 	public static void main(String[] args) {
@@ -31,9 +31,17 @@ public class TestCast extends TestCastSuper {
 		try{
 			TestCast testCast = new TestCast();
 			Object t = (TestCastSuper) m1(testCast);
-			printTestResult(System.err, FAIL, "cast" , "Object");
+			printTestResult(System.err, PASS, "cast" , "TestCastSuper");
 		} catch(RuntimeException e){
-			printTestResult(System.err, PASS, "cast" , "Object");
+			printTestResult(System.err, FAIL, "cast" , "TestCastSuper");
+		}
+		
+		try{
+			TestCast testCast = new TestCast();
+			Object t = (TestCastSuperSuper) m1(testCast);
+			printTestResult(System.err, FAIL, "cast" , "TestCastSuperSuper");
+		} catch(RuntimeException e){
+			printTestResult(System.err, PASS, "cast" , "TestCastSuperSuper");
 		}
 	}	
 }

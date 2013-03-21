@@ -6,6 +6,7 @@ import javassist.NotFoundException;
 import javassist.expr.Cast;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
+import javassist.expr.Handler;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
@@ -42,25 +43,12 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
-	//	@Override
-	//	public void edit(NewArray newArray) {
-	//		
-	//	}
-	//	
 	@Override
 	public void edit(Cast castExpression) {
 		try {
-			String assertion = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
-//			System.out.println("CAST to: " + castExpression.getType().getName());
-//			System.out.println("cast cenas: " + assertion);
-//			System.out.println("WHERE AM I? " + castExpression.where().getName());
-//			System.out.println("TO STRING " +castExpression.toString().toString());
+			String[] assertions = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
 			
-			String replacingCastExpr = "if(" + generateIfCastCondition(castExpression, assertion) + ") {" + "$_ = $proceed($$);" + "}" + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
-			
-			System.out.println("REPLACING:");
-			System.out.println(replacingCastExpr);
-			
+			String replacingCastExpr = "if(" + generateIfCastCondition(castExpression, assertions) + ") {" + "$_ = $proceed($$);" + "}" + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
 			castExpression.replace(replacingCastExpr);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
@@ -71,7 +59,15 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
-	private String generateIfCastCondition(Cast castExpression, String assertion) throws NotFoundException {
+	private String generateIfCastCondition(Cast castExpression, String[] assertions) throws NotFoundException {
+		String assertion = null;
+		
+		for(String s : assertions) {
+			if(s.equals(castExpression.getType().getName())) {
+				assertion = castExpression.getType().getName();
+				break;
+			}
+		}
 		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getOwnCastExpression(castExpression);
 	}
 
@@ -88,5 +84,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
 		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
+	}
+	
+	@Override
+	public void edit(Handler handler) {
+		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
 	}
 }

@@ -19,16 +19,4 @@ public class TestAssertion {
 	public static void printTestResult(PrintStream stream, String result, String method, String args) {
 		stream.println("Test: " + method + "(" + args + ")" + " w/ result: " + result);
 	}
-
-	public void test(Method method, Object[] args, Object receiver) {
-		try {
-			method.invoke(receiver, args);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-	}
 }
