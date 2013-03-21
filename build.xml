@@ -68,12 +68,21 @@
 		</java>
 	</target>
 	
+	   <target name="test-arrayInitializer" depends="compile"
+	        description="Tests over arrays initialization.">
+	        <java classname="${main}" fork="true">
+	            <arg value="${base}.array.TestArrayInitializer" />
+	            <arg value="method" />
+	            <classpath refid="project.classpath" />
+	        </java>
+	    </target>
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
         <delete dir="ist" />
 	</target>
 	
-	<target name="test-all" description="Runs all the tests" depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn, test-constructor"></target>
+	<target name="test-all" description="Runs all the tests" 
+		depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn,test-constructor,test-arrayInitializer"></target>
 	    
 
 </project>
