@@ -1,56 +1,21 @@
 package ist.meic.pa;
 
 import javassist.CannotCompileException;
-import javassist.CtBehavior;
 import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
 import javassist.NotFoundException;
-import javassist.expr.*;
+import javassist.expr.Cast;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
 	private CtClass ctClass;
-	private MethodInterceptor methodInterceptor;
 	private FieldInterceptor fieldInterceptor;
 
 	public AssertionExpressionEditor(CtClass ctClass) {
 		this.ctClass = ctClass;
-		this.methodInterceptor = new MethodInterceptor();
 		this.fieldInterceptor = new FieldInterceptor();
 	}
-
-//	@Override
-//	public void edit(MethodCall methodCall) throws CannotCompileException {
-//		try {
-//
-//			if(methodCall.getMethod().hasAnnotation(Assertion.class)) {
-//				try {
-//					ctClass.getMethod(methodCall.getMethodName() + "$auxiliar", methodCall.getSignature());
-//				} catch (NotFoundException e) {
-//
-//					CtMethod originalMethod = methodCall.getMethod();
-//					String originalMethodName = originalMethod.getName();
-//
-//					CtMethod auxMethod = CtNewMethod.copy(originalMethod, originalMethodName + "$auxiliar", ctClass, null);
-////					ctClass.addMethod(auxMethod);
-//					methodCall.getMethod().getDeclaringClass().addMethod(auxMethod);
-//
-//					originalMethod.setBody("{ return ($r)" + originalMethodName + "$auxiliar($$); }");
-//				}
-//			}
-//
-//			String assertionExpr = methodInterceptor.recursiveAssert(ctClass, methodCall);
-//			if(assertionExpr != null) {
-//				String postMethod = methodInterceptor.createMethodBody(assertionExpr);
-//				methodCall.getMethod().insertAfter(postMethod);
-//			}
-//		} catch (NotFoundException e) {
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	@Override
 	public void edit(FieldAccess fieldAccess) throws CannotCompileException {
@@ -77,44 +42,51 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
-//	@Override
-//	public void edit(ConstructorCall constructorCall) {
-//		//		System.out.println("ConstructorCall w/ cena: " + constructorCall.getSignature() + " " + constructorCall.getMethodName());
-//		try {
-//			CtBehavior constructor = constructorCall.where();
-//			Assertion annotation = (Assertion) constructor.getAnnotation(Assertion.class);
-//			String assertionExpression = annotation != null ? annotation.value() : null;
-//
-//			if(assertionExpression != null) {
-//				String constructorVerification = "if(!("+ assertionExpression + ")) {"
-//						+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpression + " is false\");"
-//						+ "}";
-//				constructor.insertBefore(constructorVerification);
-//			}
-//		} catch (CannotCompileException e) {
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	//	
 	//	@Override
 	//	public void edit(NewArray newArray) {
 	//		
 	//	}
 	//	
-	//	@Override
-	//	public void edit(Cast c) {
-	//		
-	//	}
-	//	
-	//	@Override
-	//	public void edit(Handler handler) {
-	//		
-	//	}
-	//	
-	//	@Override
-	//	public void edit(NewExpr expr) {
-	//		
-	//	}
+	@Override
+	public void edit(Cast castExpression) {
+		try {
+			String assertion = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
+//			System.out.println("CAST to: " + castExpression.getType().getName());
+//			System.out.println("cast cenas: " + assertion);
+//			System.out.println("WHERE AM I? " + castExpression.where().getName());
+//			System.out.println("TO STRING " +castExpression.toString().toString());
+			
+			String replacingCastExpr = "if(" + generateIfCastCondition(castExpression, assertion) + ") {" + "$_ = $proceed($$);" + "}" + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
+			
+			System.out.println("REPLACING:");
+			System.out.println(replacingCastExpr);
+			
+			castExpression.replace(replacingCastExpr);
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String generateIfCastCondition(Cast castExpression, String assertion) throws NotFoundException {
+		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getOwnCastExpression(castExpression);
+	}
+
+	private String getOwnCastExpression(Cast castExpression) {
+		try {
+			String castingClass = castExpression.getEnclosingClass().getName();
+			String castClass = castExpression.getType().getName();
+			return "(\"" + castingClass + "\"" + ".equals(\"" + castClass + "\"))";  
+		} catch (NotFoundException e) {
+			e.printStackTrace();
+		}
+		return "" + false;
+	}
+
+	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
+		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
+	}
 }

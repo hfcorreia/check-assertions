@@ -70,15 +70,11 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	}
 
 	public static void main(String[] args) {
-		String PASS = "passei";
-		String FAIL = "falhei";
 		try{
 			TestMethodReturn methodReturn = new TestMethodReturn();
 			methodReturn.m1(10);
 			printTestResult(System.out, PASS, "m1", "10");
 		} catch(RuntimeException e){
-			System.out.println("bela merda");
-
 			printTestResult(System.err, FAIL, "m1", "10");
 		}
 

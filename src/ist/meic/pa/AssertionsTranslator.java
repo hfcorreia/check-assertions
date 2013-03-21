@@ -14,8 +14,7 @@ import javassist.Translator;
 public class AssertionsTranslator implements Translator {
 
 	@Override
-	public void onLoad(ClassPool pool, String className)
-			throws NotFoundException, CannotCompileException {
+	public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
 		CtClass ctClass = pool.get(className);
 		ctClass.instrument(new AssertionExpressionEditor(ctClass));
 
@@ -74,7 +73,7 @@ public class AssertionsTranslator implements Translator {
 
 			String superClassAssertion = getSuperConstructorExpression(ctConstructor);
 			String assertionExpression = getTotalAssert(currentAssertion, superClassAssertion);
-			System.out.println("SUPER ASSERT : " + assertionExpression);
+//			System.out.println("SUPER ASSERT : " + assertionExpression);
 
 			if(assertionExpression != null) {
 				String constructorVerification = "if(!("+ assertionExpression + ")) {"
