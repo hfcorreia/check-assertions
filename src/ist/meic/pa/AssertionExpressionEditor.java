@@ -91,24 +91,21 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(Handler handler) {
 		try {
+//			System.out.println("handler: " + handler.getType().getName());
 			CtClass ctClass = handler.where().getDeclaringClass();
 			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
 				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
-				//				System.out.println("class anotated w/ assertion cool " + anotation.exception() + " invoking method " + anotation.method());
-				if(handler.getType().getName().equals(anotation.exception())) {
-					//					System.out.println("codigo inject:");
-					//					System.out.println(ctClass.getSuperclass().getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getSuperclass().getName() + "(), null);");
-					//					handler.insertBefore("printCatch(\"Error detected on asserted exception\");");
-					String invocatingMethod = "{" + 
-							"try {" +
-							ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-							"} catch (Exception e) { /* do nothing */ }" +
+				if(exceptionPresent(handler, anotation.exception())) {
+					String invocatingMethod = 
+							"{" + 
+									"try {" +
+									ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
+									"} catch (Exception e) { /* do nothing */ }" +
 							"}";
-					//					System.out.println(invocatingMethod);
 					handler.insertBefore(invocatingMethod);
 				}
 				else {
-					//					System.out.println("not wanted exception " + handler.getType().getName() + " and " + anotation.exception());
+					System.out.println("not wanted exception " + handler.getType().getName() + " and " + anotation.exception());
 				}
 			}
 		} catch (ClassNotFoundException e) {
@@ -119,4 +116,18 @@ public class AssertionExpressionEditor extends ExprEditor {
 			e.printStackTrace();
 		}
 	}
+	
+	private boolean exceptionPresent(Handler handler, String[] exceptions)  {
+		for(String s : exceptions) {
+			try {
+				if(handler.getType().getName().equals(s)) {
+					return true;
+				}
+			} catch (NotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
 }

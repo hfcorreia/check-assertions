@@ -5,7 +5,7 @@ import java.io.PrintStream;
 
 public class TestAssertion {
 
-	protected final static String PASS = "SUCCESS";
+	protected final static String PASS = "Sucess";
 	protected final static String FAIL = "FAILED!";
 
 	public TestAssertion() {}
@@ -16,9 +16,5 @@ public class TestAssertion {
 	
 	public static void printCatch(String message) {
 		System.err.println(message);
-	}
-	
-	public void catchMethod() {
-		System.out.println("FOUND A ASSERTED EXCEPTION");
 	}
 }

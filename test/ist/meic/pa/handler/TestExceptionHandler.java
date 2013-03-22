@@ -3,40 +3,48 @@ package ist.meic.pa.handler;
 import ist.meic.pa.ExceptionAssertion;
 import ist.meic.pa.TestAssertion;
 
-@ExceptionAssertion(exception = "java.lang.RuntimeException", method = "catchMethod")
+import java.io.FileNotFoundException;
+import java.nio.BufferOverflowException;
+
+@ExceptionAssertion(exception = {"java.nio.BufferOverflowException", "java.lang.NullPointerException"}, method = "catchMethod")
 public class TestExceptionHandler extends TestAssertion{
 
-	public void m1(String cause) throws RuntimeException {
-		throw new RuntimeException(cause);
+	public void m2() throws FileNotFoundException {
+		throw new FileNotFoundException();
 	}
 
+	public void m1() throws NullPointerException {
+		throw new NullPointerException();
+	}
+	
+	
 	public static void main(String[] args) {
-
-		//		try {
-		//		     ist.meic.pa.TestAssertion.class.getMethod("catchMethod", null).invoke(new ist.meic.pa.TestAssertion(), null);
-		//		} catch (IllegalArgumentException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		} catch (SecurityException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		} catch (IllegalAccessException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		} catch (InvocationTargetException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		} catch (NoSuchMethodException e1) {
-		//			// TODO Auto-generated catch block
-		//			e1.printStackTrace();
-		//		}
-
 
 		try{
 			TestExceptionHandler t = new TestExceptionHandler();
-			t.m1("random cause");
-		} catch (RuntimeException e) {
+			t.m1();
+		} catch (NullPointerException e) {
+			//do nothing
+		} catch (BufferOverflowException e) {
 			//do nothing
 		}
+		
+		try{
+			TestExceptionHandler t = new TestExceptionHandler();
+			t.m2();
+		} catch (NullPointerException e) {
+			//do nothing
+		} catch (BufferOverflowException e) {
+			//do nothing
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+		}
 	}
+
+	
+	
+	public void catchMethod() {
+		System.out.println("FOUND A ASSERTED EXCEPTION");
+	}
+	
 }
