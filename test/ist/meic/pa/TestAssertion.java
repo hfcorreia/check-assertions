@@ -19,4 +19,12 @@ public class TestAssertion {
 	public static void printTestResult(PrintStream stream, String result, String method, String args) {
 		stream.println("Test: " + method + "(" + args + ")" + " w/ result: " + result);
 	}
+	
+	public static void printCatch(String message) {
+		System.err.println(message);
+	}
+	
+	public void catchMethod() {
+		System.out.println("FOUND A ASSERTED EXCEPTION");
+	}
 }
