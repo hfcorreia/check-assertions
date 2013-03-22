@@ -20,23 +20,23 @@ public class AssertionsTranslator implements Translator {
 
 	@Override
 	public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
-		CtClass ctClass = pool.get(className);
-//		if (!className.equals(ARRAY_INTERCEPTOR)) {
-//			CodeConverter conv = new CodeConverter();
-//			CtClass arrayClass = pool.get(ARRAY_INTERCEPTOR);
+	    CtClass ctClass = pool.get(className);
+	    if (!className.equals(ARRAY_INTERCEPTOR)) {
+	        CodeConverter conv = new CodeConverter();
+	        CtClass arrayClass = pool.get(ARRAY_INTERCEPTOR);
 
-//			conv.replaceArrayAccess(arrayClass, new CodeConverter.DefaultArrayAccessReplacementMethodNames());
-//			ctClass.instrument(conv);
-			ctClass.instrument(new AssertionExpressionEditor(ctClass));
-			
-			for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
-				assertionVerifier(ctClass, ctMethod);
-			}
+	        conv.replaceArrayAccess(arrayClass, new CodeConverter.DefaultArrayAccessReplacementMethodNames());
+	        ctClass.instrument(conv);
+	        ctClass.instrument(new AssertionExpressionEditor(ctClass));
 
-			for (CtConstructor ctConstructor : ctClass.getConstructors()) {
-				assertionVerifier(ctConstructor);
-			}
-//		}
+	        for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
+	            assertionVerifier(ctClass, ctMethod);
+	        }
+
+	        for (CtConstructor ctConstructor : ctClass.getConstructors()) {
+	            assertionVerifier(ctConstructor);
+	        }
+	    }
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class AssertionsTranslator implements Translator {
 		if ( ( !afterMethodAssertion.isEmpty() || !beforeMethodAssertion.isEmpty() ) && 
 				ctClass!=null && originalMethod!=null && !isAbstractMethod(originalMethod) ) {
 			try {
-				// save a copy of the original method but with a diferent name.
+				// save a copy of the original method but with a different name.
 				String originalMethodName = originalMethod.getName();
 				String auxiliarMethodName = originalMethodName + "$auxiliar";
 				
@@ -73,7 +73,7 @@ public class AssertionsTranslator implements Translator {
 						"	" + "	" + "throw new java.lang.RuntimeException(\"\");" +
 						"	" + " } " + 
 						" } ";
-//				
+
 				beforeMethodExecutionTemplate = beforeMethodAssertion.isEmpty() ? "" : beforeMethodExecutionTemplate;
 				//AFTER
 				
@@ -92,7 +92,6 @@ public class AssertionsTranslator implements Translator {
 
 			} catch (CannotCompileException e1) {
 				e1.printStackTrace();
-				System.out.println("ERROR compiling");
 			}
 		}
 	}
@@ -127,24 +126,23 @@ public class AssertionsTranslator implements Translator {
 		if( expression1.isEmpty() && !expression2.isEmpty() ){
 			return expression2;
 		}
-		//default: expression1.isEmpty() && expression2.isEmpty()
 		return "";
 	}
 	
 	private List<Assertion> getHierarquicAssertionsForMethod(CtClass myCtClass, CtMethod myCtMethod) {
-		List<Assertion> assertions = new ArrayList<Assertion>();
-		
-		for( CtClass ctClass : getAllHierarquicClasses(myCtClass) ) {
-			CtMethod ctMethod = getMethodForClass(ctClass, myCtMethod);
-			if( ctMethod!=null && ctMethod.hasAnnotation( Assertion.class ) ) {
-				try {
-					assertions.add( (Assertion) ctMethod.getAnnotation( Assertion.class ) );
-				} catch (ClassNotFoundException e) {
-					//Error getting annotation - do nothing
-				}
-			}
-		}
-		return assertions;
+	    List<Assertion> assertions = new ArrayList<Assertion>();
+
+	    for (CtClass ctClass : getAllHierarquicClasses(myCtClass)) {
+	        CtMethod ctMethod = getMethodForClass(ctClass, myCtMethod);
+	        if (ctMethod != null && ctMethod.hasAnnotation(Assertion.class)) {
+	            try {
+	                assertions.add((Assertion) ctMethod.getAnnotation(Assertion.class));
+	            } catch (ClassNotFoundException e) {
+	                //Error getting annotation - do nothing
+	            }
+	        }
+	    }
+	    return assertions;
 	}
 	
 	private CtMethod getMethodForClass(CtClass ctClass, CtMethod myCtMethod) {
@@ -155,18 +153,18 @@ public class AssertionsTranslator implements Translator {
 		} 
 	}
 
-	private List<CtClass> getAllHierarquicClasses( CtClass myCtClass ) {
-		List<CtClass> result = new ArrayList<CtClass>();
-		if( ! hasValidSuperclass( myCtClass ) ) {
-			return result;
-		}
-		for( CtClass hierarquicClass : getSuperclassAndInterfaces( myCtClass ) ) {
-			result.addAll( getAllHierarquicClasses( hierarquicClass ) );
-		}
-		
-		result.add( myCtClass );
-		return result;
-	}
+    private List<CtClass> getAllHierarquicClasses(CtClass myCtClass) {
+        List<CtClass> result = new ArrayList<CtClass>();
+        if (hasValidSuperclass(myCtClass)) {
+
+            for (CtClass hierarquicClass : getSuperclassAndInterfaces(myCtClass)) {
+                result.addAll(getAllHierarquicClasses(hierarquicClass));
+            }
+
+            result.add(myCtClass);
+        }
+        return result;
+    }
 
 	private boolean hasValidSuperclass(CtClass myCtClass) {
 		try {
@@ -214,7 +212,6 @@ public class AssertionsTranslator implements Translator {
 			
 			String assertionExpression = getTotalAssert(currentAssertion, superClassAssertion);
 
-			
 			if(assertionExpression != null) {
 				String constructorVerification = 
 						" { " +
@@ -255,17 +252,17 @@ public class AssertionsTranslator implements Translator {
 	}
 
 	private String getTotalAssert(String currentAssert, String superAssert) {
-		String r = null;
+		String assertion = null;
 		if (superAssert != null) {
-			r = superAssert;
+			assertion = superAssert;
 			if (currentAssert != null) {
-				r += " && " + currentAssert;
+				assertion += " && " + currentAssert;
 			}
 		} else {
 			if (currentAssert != null) {
-				r = currentAssert;
+				assertion = currentAssert;
 			}
 		}
-		return r;
+		return assertion;
 	}
 }

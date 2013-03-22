@@ -15,8 +15,7 @@ public class TestExceptionHandler {
 			TestExceptionHandler t = new TestExceptionHandler();
 			t.m1("random");
 		} catch (Exception e) {
-			System.out.println("apanhei");
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 }

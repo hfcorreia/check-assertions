@@ -19,7 +19,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 	}
 
 	@Override
-	public void edit(FieldAccess fieldAccess) throws CannotCompileException {
+	public void edit(FieldAccess fieldAccess) {
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
@@ -37,9 +37,11 @@ public class AssertionExpressionEditor extends ExprEditor {
 			}
 		} catch (NotFoundException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
 	}
 
 	@Override
@@ -89,9 +91,8 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(Handler handler) {
 		if(handler.where().getDeclaringClass().hasAnnotation(ExceptionAssertion.class)) {
-			System.out.println("class anotated w/ assertion cool");
-//			handler.insertBefore("");
+			//System.out.println("class anotated w/ assertion");
 		}
-		System.out.println("handling exception at " + handler.getEnclosingClass().getName());
+		//System.out.println("handling exception at " + handler.getEnclosingClass().getName());
 	}
 }

@@ -1,15 +1,9 @@
 package ist.meic.pa;
 
-import javassist.CtClass;
-import javassist.CtMethod;
 
 public class ArrayInterceptor {
-    private CtClass ctClass;
-    private CtMethod ctMethod;
-    
-    public ArrayInterceptor(CtClass ctClass, CtMethod ctMethod) {
-        this.ctClass = ctClass;
-        this.ctMethod = ctMethod;
+   
+    public ArrayInterceptor() {
     }
 
     public static void arrayWriteInt(Object obj, int index, int newValue) {
@@ -20,5 +14,8 @@ public class ArrayInterceptor {
     public static int arrayReadInt(Object obj, int index) {
         int[] array = (int[]) obj;
         return array[index];
+    }
+    
+    public static void arrayWriteObject(Object obj, int index, Object newValue) {
     }
 }
