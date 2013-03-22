@@ -40,6 +40,15 @@
 			<classpath refid="project.classpath" />
 		</java>
 	</target>
+	
+		<target name="test-methodBefore" depends="compile"
+		description="Tests if the return of the methods is valid with the beforemethod annotation.">
+		<java classname="${main}" fork="true">
+			<arg value="${base}.methodBefore.TestMethodReturn" />
+			<arg value="method" />
+			<classpath refid="project.classpath" />
+		</java>
+	</target>
 
 	<target name="test-fieldAssignment" depends="compile"
 		description="Tests if the field annotations are valid.">
@@ -101,7 +110,7 @@
 	</target>
 	
 	<target name="test-all" description="Runs all the tests" 
-		depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn,test-constructor,test-arrayInitializer,test-cast, test-catch"></target>
+		depends="test-fieldInitialization,test-fieldAssignment,test-methodReturn,test-constructor,test-arrayInitializer,test-cast,test-methodBefore" />
 	    
 
 </project>
