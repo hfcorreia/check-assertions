@@ -1,7 +1,5 @@
 package ist.meic.pa.handler;
 
-import java.lang.reflect.InvocationTargetException;
-
 import ist.meic.pa.ExceptionAssertion;
 import ist.meic.pa.TestAssertion;
 
@@ -14,26 +12,26 @@ public class TestExceptionHandler extends TestAssertion{
 
 	public static void main(String[] args) {
 
-//		try {
-//		     ist.meic.pa.TestAssertion.class.getMethod("catchMethod", null).invoke(new ist.meic.pa.TestAssertion(), null);
-//		} catch (IllegalArgumentException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (SecurityException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (IllegalAccessException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (InvocationTargetException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (NoSuchMethodException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
-		
-		
+		//		try {
+		//		     ist.meic.pa.TestAssertion.class.getMethod("catchMethod", null).invoke(new ist.meic.pa.TestAssertion(), null);
+		//		} catch (IllegalArgumentException e1) {
+		//			// TODO Auto-generated catch block
+		//			e1.printStackTrace();
+		//		} catch (SecurityException e1) {
+		//			// TODO Auto-generated catch block
+		//			e1.printStackTrace();
+		//		} catch (IllegalAccessException e1) {
+		//			// TODO Auto-generated catch block
+		//			e1.printStackTrace();
+		//		} catch (InvocationTargetException e1) {
+		//			// TODO Auto-generated catch block
+		//			e1.printStackTrace();
+		//		} catch (NoSuchMethodException e1) {
+		//			// TODO Auto-generated catch block
+		//			e1.printStackTrace();
+		//		}
+
+
 		try{
 			TestExceptionHandler t = new TestExceptionHandler();
 			t.m1("random cause");

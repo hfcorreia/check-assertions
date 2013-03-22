@@ -1,7 +1,5 @@
 package ist.meic.pa.methodReturn;
 
-import java.io.PrintStream;
-
 import ist.meic.pa.Assertion;
 
 /*
@@ -266,9 +264,5 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 
 	}
 
-//	private static void printTestResult(PrintStream out, String pASS,
-//			String string, String string2) {
-//		System.out.println(pASS + string + string2);
-//	}
 }
 

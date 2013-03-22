@@ -15,7 +15,6 @@ public class TestArrayInitializer extends TestAssertion {
         strings = new int[2];
         strings[1] = 1;
         int x = strings[1];
-        System.out.println("prining " + x);
     }
 
     public static void main(String[] args) {

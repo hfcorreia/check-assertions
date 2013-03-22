@@ -1,8 +1,5 @@
 package ist.meic.pa;
 
-import java.lang.reflect.InvocationTargetException;
-
-import ist.meic.pa.handler.TestExceptionHandler;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
@@ -22,7 +19,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 	}
 
 	@Override
-	public void edit(FieldAccess fieldAccess) throws CannotCompileException {
+	public void edit(FieldAccess fieldAccess) {
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
@@ -40,7 +37,9 @@ public class AssertionExpressionEditor extends ExprEditor {
 			}
 		} catch (NotFoundException e) {
 			e.printStackTrace();
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (CannotCompileException e) {
 			e.printStackTrace();
 		}
 	}
@@ -95,21 +94,21 @@ public class AssertionExpressionEditor extends ExprEditor {
 			CtClass ctClass = handler.where().getDeclaringClass();
 			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
 				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
-//				System.out.println("class anotated w/ assertion cool " + anotation.exception() + " invoking method " + anotation.method());
+				//				System.out.println("class anotated w/ assertion cool " + anotation.exception() + " invoking method " + anotation.method());
 				if(handler.getType().getName().equals(anotation.exception())) {
-//					System.out.println("codigo inject:");
-//					System.out.println(ctClass.getSuperclass().getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getSuperclass().getName() + "(), null);");
-//					handler.insertBefore("printCatch(\"Error detected on asserted exception\");");
+					//					System.out.println("codigo inject:");
+					//					System.out.println(ctClass.getSuperclass().getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getSuperclass().getName() + "(), null);");
+					//					handler.insertBefore("printCatch(\"Error detected on asserted exception\");");
 					String invocatingMethod = "{" + 
-					"try {" +
-						ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-					"} catch (Exception e) { /* do nothing */ }" +
-						"}";
-//					System.out.println(invocatingMethod);
+							"try {" +
+							ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
+							"} catch (Exception e) { /* do nothing */ }" +
+							"}";
+					//					System.out.println(invocatingMethod);
 					handler.insertBefore(invocatingMethod);
 				}
 				else {
-//					System.out.println("not wanted exception " + handler.getType().getName() + " and " + anotation.exception());
+					//					System.out.println("not wanted exception " + handler.getType().getName() + " and " + anotation.exception());
 				}
 			}
 		} catch (ClassNotFoundException e) {
