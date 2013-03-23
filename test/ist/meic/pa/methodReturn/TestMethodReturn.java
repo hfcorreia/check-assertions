@@ -1,6 +1,6 @@
 package ist.meic.pa.methodReturn;
 
-import ist.meic.pa.Assertion;
+import ist.meic.pa.assertions.Assertion;
 
 /*
  * brincar com modificadores

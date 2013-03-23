@@ -7,7 +7,7 @@ import javassist.NotFoundException;
 
 public class FieldInterceptor {
 
-	public void createAuxiliaryFields(CtClass ctClass, CtField ctField) throws CannotCompileException, NotFoundException {
+	public static void createAuxiliaryFields(CtClass ctClass, CtField ctField) throws CannotCompileException, NotFoundException {
 		String fieldName = ctField.getName();
 
 		if (! existsFields(ctClass, fieldName + "$isInitialized") ) {
@@ -21,7 +21,7 @@ public class FieldInterceptor {
 		}
 	}
 
-	private boolean existsFields(CtClass ctClass, String fieldName) {
+	private static boolean existsFields(CtClass ctClass, String fieldName) {
 		try {
 			ctClass.getField(fieldName);
 			return true;
@@ -30,7 +30,7 @@ public class FieldInterceptor {
 		}
 	}
 
-	public String createReadFieldBody(String fieldName) {
+	public static String createReadFieldBody(String fieldName) {
 		return 	"{ " +
 				"   " + "if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
 				"   " + "   " + "throw new java.lang.RuntimeException(\"Error: " + fieldName + "was not initialized\");" + 
@@ -40,7 +40,7 @@ public class FieldInterceptor {
 				"}";
 	}
 
-	public String createWriteFieldBody(String assertExpression, String fieldName ) {
+	public static String createWriteFieldBody(String assertExpression, String fieldName ) {
 		return 	"{ " + 
 					fieldName + "$isInitializedTemp = " + fieldName + "$isInitialized;" + 
 					fieldName + "$isInitialized = true;" +
@@ -54,7 +54,7 @@ public class FieldInterceptor {
 				"}";
 	} 
 
-	public String createErrorMessage(String assertExpression) {
+	public static String createErrorMessage(String assertExpression) {
 		return "\"The assertion " + assertExpression +" is false\"";
 	}
 

@@ -1,8 +1,8 @@
-package ist.meic.pa;
+package ist.meic.pa.assertions;
 
 
 public @interface ExceptionAssertion {
+	
 	String[] exception();
-//	String value();
 	String method();
 }

@@ -1,95 +1,131 @@
 package ist.meic.pa;
 
+import ist.meic.pa.assertions.Assertion;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import javassist.expr.MethodCall;
 
 public class MethodInterceptor {
 
-	public String createMethodBody(final String assertionExpr) {
-		return "if(!("+ assertionExpr + ")) {"
-				+ "throw new java.lang.RuntimeException(\"The assertion " + assertionExpr + " is false\");"
-				+ "}";
+	public static String createOriginalTemplate(String auxiliarMethodName) {
+		return " { " +
+				"	" + "return ($r) " + auxiliarMethodName + "($$);" + 
+				" } ";
 	}
 
-	public String createErrorMessage(String assertExpression) {
-		return "\"The assertion " + assertExpression + " is false\"";
+	public static String createAfterTemplate(CtMethod originalMethod, String afterMethodAssertion, String auxiliarMethodName) throws NotFoundException {
+		return " { " +
+				"	" + originalMethod.getReturnType().getName() + " $_ = " + auxiliarMethodName + "($$);" +
+				"	" + "if( ! ( " + afterMethodAssertion + " ) ) { " +
+				"	" + "	"  + "throw new java.lang.RuntimeException(\"\");" +
+				"	" + "}" + "	" + "return ($r)$_;" + 
+				" } ";
 	}
 
-	public String recursiveAssert(CtClass ctClass, MethodCall methodCall) {
-		String currentAssert = getCurrentAssert(ctClass, methodCall);
-		String superAssert = getSuperClassAssert(ctClass, methodCall);
-
-		String interfaceAssert = getInterfaceAssert(ctClass, methodCall);
-
-		String noInterf = getTotalAssert(currentAssert, superAssert);
-		String debug = getTotalAssert(interfaceAssert, noInterf);
-
-		return debug;
+	public static String createBeforeTemplate(String beforeMethodAssertion) {
+		return " { " +  
+				"	" + "if( ! ( " + beforeMethodAssertion + ") ) {" +
+				"	" + "	" + "throw new java.lang.RuntimeException(\"\");" +
+				"	" + " } " + 
+				" } ";
 	}
+	
+	public static String getAfterMethodAssertionExpression(CtClass ctClass, CtMethod ctMethod) {
+		String assertionExpression = "";
 
-	private String getInterfaceAssert(CtClass ctClass, MethodCall methodCall) {
-		String result = null;
-		methodCall.where().getClass();
-		CtClass[] interfaces = null;
-		try {
-			interfaces  = ctClass.getInterfaces();
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		}
-		for(CtClass interf : interfaces) {
-			String interfaceAssert = recursiveAssert(interf, methodCall);
-			result = getTotalAssert(result, interfaceAssert);
+		for(Assertion assertion : getHierarquicAssertionsForMethod(ctClass, ctMethod)) {
+			assertionExpression = unionAsserExpressions(assertionExpression, assertion.value());
 		}
 
+		return assertionExpression;
+	}
+
+	public static String getBeforeMethodAssertionExpression(CtClass ctClass, CtMethod ctMethod) {
+		String assertionExpression = "";
+
+		for(Assertion assertion : getHierarquicAssertionsForMethod(ctClass, ctMethod)) {
+			assertionExpression = unionAsserExpressions(assertionExpression, assertion.before());
+		}
+
+		return assertionExpression;
+	}
+	
+	private static List<Assertion> getHierarquicAssertionsForMethod(CtClass ctClass, CtMethod myCtMethod) {
+		List<Assertion> assertions = new ArrayList<Assertion>();
+
+		for (CtClass hierarquicClass : getAllHierarquicClasses(ctClass)) {
+			try {
+				CtMethod ctMethod = hierarquicClass.getMethod(myCtMethod.getName(), myCtMethod.getSignature());
+				if (ctMethod.hasAnnotation(Assertion.class)) {
+					assertions.add((Assertion) ctMethod.getAnnotation(Assertion.class));
+				}
+			} catch (ClassNotFoundException e) {
+				//Error getting annotation - do nothing
+			} catch (NotFoundException e) {
+				//do nothing
+			}
+		}
+		return assertions;
+	}
+
+	private static List<CtClass> getAllHierarquicClasses(CtClass ctClass) {
+		List<CtClass> result = new ArrayList<CtClass>();
+		
+		if (hasValidSuperclass(ctClass)) {
+			for (CtClass hierarquicClass : getSuperclassAndInterfaces(ctClass)) {
+				result.addAll(getAllHierarquicClasses(hierarquicClass));
+			}
+
+			result.add(ctClass);
+		}
 		return result;
 	}
 
-	private String getTotalAssert(String currentAssert, String superAssert) {
-		String r = null;
-		if(superAssert != null) {
-			r = superAssert;
-			if (currentAssert != null) {
-				r += " && " + currentAssert;
+	private static boolean hasValidSuperclass(CtClass ctClass) {
+			try {
+				return ctClass!=null && ctClass.getSuperclass()!=null;
+			} catch (NotFoundException e) {
+				return false;
 			}
-		}
-		else {
-			if(currentAssert != null) {
-				r = currentAssert;
-			}
-		}
-		return r;
 	}
+	
 
-	private String getSuperClassAssert(CtClass ctClass, MethodCall methodCall) {
-		String superAssert = null;
-		CtClass superclass = null;
+	private static ArrayList<CtClass> getSuperclassAndInterfaces(CtClass ctClass) {
+		ArrayList<CtClass> result = new ArrayList<CtClass>();
+		
+		//get superclass
 		try {
-			superclass = ctClass.getSuperclass();
-			if(superclass != null) {
-				superAssert = recursiveAssert(superclass, methodCall);
-			}
+			result.add(ctClass.getSuperclass());
 		} catch (NotFoundException e) {
-			superclass = null;
+			//do nothing
 		}
-		return superAssert;
+		
+		//get interfaces
+		try {
+			result.addAll(Arrays.asList(ctClass.getInterfaces()));
+		} catch (NotFoundException e) {
+			//do nothing
+		}
+		
+		return result;
 	}
-
-	private String getCurrentAssert(CtClass ctClass, MethodCall methodCall) {
-		String currentAssert = null;
-		CtMethod ctMethod = null;
-		try {
-			ctMethod  = ctClass.getMethod(methodCall.getMethodName(), methodCall.getSignature());
-			if(ctMethod.hasAnnotation(Assertion.class)) {
-				currentAssert = ((Assertion) ctMethod.getAnnotation(Assertion.class)).value();
-			}
-		} catch (NotFoundException e) {
-			ctMethod = null;
-		} catch (ClassNotFoundException e) {
-			currentAssert = null;
+	
+	public static String unionAsserExpressions(String expression1, String expression2) {
+		if( !expression1.isEmpty() && !expression2.isEmpty() ) {
+			return expression1 + " && " + expression2;
 		}
-		return currentAssert;
+		if( !expression1.isEmpty() && expression2.isEmpty() ) {
+			return expression1;
+		}
+		if( expression1.isEmpty() && !expression2.isEmpty() ){
+			return expression2;
+		}
+		return "";
 	}
 
 }

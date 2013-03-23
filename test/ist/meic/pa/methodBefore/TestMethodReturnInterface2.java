@@ -1,6 +1,6 @@
 package ist.meic.pa.methodBefore;
 
-import ist.meic.pa.Assertion;
+import ist.meic.pa.assertions.Assertion;
 
 public interface TestMethodReturnInterface2 {
 

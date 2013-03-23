@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ist.meic.pa.Assertion;
+import ist.meic.pa.assertions.Assertion;
 
 /*
  * brincar com modificadores

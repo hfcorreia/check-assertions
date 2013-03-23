@@ -3,7 +3,6 @@ package ist.meic.pa.array;
 import ist.meic.pa.ArrayInitializationAssertion;
 import ist.meic.pa.TestAssertion;
 
-@ArrayInitializationAssertion
 public class TestArrayInitializer extends TestAssertion {
 
     public TestArrayInitializer() {

@@ -1,7 +1,7 @@
 package ist.meic.pa.cast;
 
-import ist.meic.pa.CastAssertion;
 import ist.meic.pa.TestAssertion;
+import ist.meic.pa.assertions.CastAssertion;
 
 @CastAssertion({"ist.meic.pa.TestAssertion", "ist.meic.pa.cast.TestCastSuper"})
 public class TestCast extends TestCastSuper {
