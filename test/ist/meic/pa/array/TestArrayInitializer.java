@@ -1,7 +1,7 @@
 package ist.meic.pa.array;
 
-import ist.meic.pa.Assertion;
 import ist.meic.pa.TestAssertion;
+import ist.meic.pa.assertions.Assertion;
 
 public class TestArrayInitializer extends TestAssertion {
 

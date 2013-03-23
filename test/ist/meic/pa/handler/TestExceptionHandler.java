@@ -1,7 +1,7 @@
 package ist.meic.pa.handler;
 
-import ist.meic.pa.ExceptionAssertion;
 import ist.meic.pa.TestAssertion;
+import ist.meic.pa.assertions.ExceptionAssertion;
 
 import java.io.FileNotFoundException;
 import java.nio.BufferOverflowException;

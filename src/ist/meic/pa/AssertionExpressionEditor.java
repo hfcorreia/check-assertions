@@ -1,5 +1,8 @@
 package ist.meic.pa;
 
+import ist.meic.pa.assertions.Assertion;
+import ist.meic.pa.assertions.CastAssertion;
+import ist.meic.pa.assertions.ExceptionAssertion;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.NotFoundException;
@@ -10,28 +13,22 @@ import javassist.expr.Handler;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
-	private CtClass ctClass;
-	private FieldInterceptor fieldInterceptor;
-
-	public AssertionExpressionEditor(CtClass ctClass) {
-		this.ctClass = ctClass;
-		this.fieldInterceptor = new FieldInterceptor();
-	}
-
 	@Override
 	public void edit(FieldAccess fieldAccess) {
+		CtClass ctClass = fieldAccess.getEnclosingClass();
+		
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
-				fieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
+				FieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
 
 				Assertion assertion = (Assertion) fieldAccess.getField().getAnnotation(Assertion.class);
 
 				if(fieldAccess.isWriter()){
-					fieldAccess.replace(fieldInterceptor.createWriteFieldBody(assertion.value(), fieldAccess.getFieldName()));
+					fieldAccess.replace(FieldInterceptor.createWriteFieldBody(assertion.value(), fieldAccess.getFieldName()));
 				} 
 				else {
 					if(fieldAccess.isReader()) {
-						fieldAccess.replace(fieldInterceptor.createReadFieldBody(fieldAccess.getFieldName()));
+						fieldAccess.replace(FieldInterceptor.createReadFieldBody(fieldAccess.getFieldName()));
 					}
 				}
 			}
@@ -47,11 +44,17 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(Cast castExpression) {
 		try {
-			String[] assertions = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
+			String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
 
-			String replacingCastExpr = "if(" + generateIfCastCondition(castExpression, assertions) + ") {" + "$_ = $proceed($$);" + "}" + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
+			String verifiedCastExpr = 
+					"if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + 
+							"$_ = $proceed($$);" + 
+					"}" + 
+					"else {" + 
+						"throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + 
+					"}";
 
-			castExpression.replace(replacingCastExpr);
+			castExpression.replace(verifiedCastExpr);
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -61,7 +64,32 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
-	private String generateIfCastCondition(Cast castExpression, String[] assertions) throws NotFoundException {
+	@Override
+	public void edit(Handler handler) {
+		try {
+			CtClass ctClass = handler.where().getDeclaringClass();
+			
+			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
+				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
+				
+				if(exceptionPresent(handler, anotation.exception())) {
+					String invocatingMethod = 
+							"{" + 
+									"try {" +
+										ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
+									"} catch (Exception e) { /* do nothing */ }" +
+							"}";
+					handler.insertBefore(invocatingMethod);
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String generateCastAssertion(Cast castExpression, String[] assertions) throws NotFoundException {
 		String assertion = null;
 
 		for(String s : assertions) {
@@ -70,13 +98,15 @@ public class AssertionExpressionEditor extends ExprEditor {
 				break;
 			}
 		}
-		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getOwnCastExpression(castExpression);
+		
+		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getSelfCastExpression(castExpression);
 	}
 
-	private String getOwnCastExpression(Cast castExpression) {
+	private String getSelfCastExpression(Cast castExpression) {
 		try {
 			String castingClass = castExpression.getEnclosingClass().getName();
 			String castClass = castExpression.getType().getName();
+			
 			return "(\"" + castingClass + "\"" + ".equals(\"" + castClass + "\"))";  
 		} catch (NotFoundException e) {
 			e.printStackTrace();
@@ -86,35 +116,6 @@ public class AssertionExpressionEditor extends ExprEditor {
 
 	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
 		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
-	}
-
-	@Override
-	public void edit(Handler handler) {
-		try {
-//			System.out.println("handler: " + handler.getType().getName());
-			CtClass ctClass = handler.where().getDeclaringClass();
-			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
-				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
-				if(exceptionPresent(handler, anotation.exception())) {
-					String invocatingMethod = 
-							"{" + 
-									"try {" +
-									ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-									"} catch (Exception e) { /* do nothing */ }" +
-							"}";
-					handler.insertBefore(invocatingMethod);
-				}
-				else {
-					System.out.println("not wanted exception " + handler.getType().getName() + " and " + anotation.exception());
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private boolean exceptionPresent(Handler handler, String[] exceptions)  {
