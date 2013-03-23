@@ -13,122 +13,124 @@ import javassist.expr.Handler;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
-	@Override
-	public void edit(FieldAccess fieldAccess) {
-		CtClass ctClass = fieldAccess.getEnclosingClass();
-		
-		try {
-			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
-				FieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
+    @Override
+    public void edit(FieldAccess fieldAccess) {
+        CtClass ctClass = fieldAccess.getEnclosingClass();
 
-				Assertion assertion = (Assertion) fieldAccess.getField().getAnnotation(Assertion.class);
+        try {
+            if(fieldAccess.getField().hasAnnotation(Assertion.class)){
+                FieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
 
-				if(fieldAccess.isWriter()){
-					fieldAccess.replace(FieldInterceptor.createWriteFieldBody(assertion.value(), fieldAccess.getFieldName()));
-				} 
-				else {
-					if(fieldAccess.isReader()) {
-						fieldAccess.replace(FieldInterceptor.createReadFieldBody(fieldAccess.getFieldName()));
-					}
-				}
-			}
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
-		}
-	}
+                Assertion assertion = (Assertion) fieldAccess.getField().getAnnotation(Assertion.class);
 
-	@Override
-	public void edit(Cast castExpression) {
-		try {
-			String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
+                if(fieldAccess.isWriter()){
+                    fieldAccess.replace(FieldInterceptor.createWriteFieldBody(assertion.value(), fieldAccess.getFieldName()));
+                } 
+                else {
+                    if(fieldAccess.isReader()) {
+                        fieldAccess.replace(FieldInterceptor.createReadFieldBody(fieldAccess.getFieldName()));
+                    }
+                }
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
+    }
 
-			String verifiedCastExpr = 
-					"if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + 
-							"$_ = $proceed($$);" + 
-					"}" + 
-					"else {" + 
-						"throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + 
-					"}";
+    @Override
+    public void edit(Cast castExpression) {
+        try {
+            if(castExpression.getEnclosingClass().hasAnnotation(CastAssertion.class)) {
+                String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
 
-			castExpression.replace(verifiedCastExpr);
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
-		}
-	}
+                String verifiedCastExpr = 
+                        "if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + 
+                                "$_ = $proceed($$);" + 
+                                "}" + 
+                                "else {" + 
+                                "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + 
+                                "}";
 
-	@Override
-	public void edit(Handler handler) {
-		try {
-			CtClass ctClass = handler.where().getDeclaringClass();
-			
-			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
-				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
-				
-				if(exceptionPresent(handler, anotation.exception())) {
-					String invocatingMethod = 
-							"{" + 
-									"try {" +
-										ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-									"} catch (Exception e) { /* do nothing */ }" +
-							"}";
-					handler.insertBefore(invocatingMethod);
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private String generateCastAssertion(Cast castExpression, String[] assertions) throws NotFoundException {
-		String assertion = null;
+                castExpression.replace(verifiedCastExpr);
+            }
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
+    }
 
-		for(String s : assertions) {
-			if(s.equals(castExpression.getType().getName())) {
-				assertion = castExpression.getType().getName();
-				break;
-			}
-		}
-		
-		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getSelfCastExpression(castExpression);
-	}
+    @Override
+    public void edit(Handler handler) {
+        try {
+            CtClass ctClass = handler.where().getDeclaringClass();
 
-	private String getSelfCastExpression(Cast castExpression) {
-		try {
-			String castingClass = castExpression.getEnclosingClass().getName();
-			String castClass = castExpression.getType().getName();
-			
-			return "(\"" + castingClass + "\"" + ".equals(\"" + castClass + "\"))";  
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		}
-		return "" + false;
-	}
+            if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
+                ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
 
-	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
-		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
-	}
-	
-	private boolean exceptionPresent(Handler handler, String[] exceptions)  {
-		for(String s : exceptions) {
-			try {
-				if(handler.getType().getName().equals(s)) {
-					return true;
-				}
-			} catch (NotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
+                if(exceptionPresent(handler, anotation.exception())) {
+                    String invocatingMethod = 
+                            "{" + 
+                                    "try {" +
+                                    ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
+                                    "} catch (Exception e) { /* do nothing */ }" +
+                                    "}";
+                    handler.insertBefore(invocatingMethod);
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (CannotCompileException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String generateCastAssertion(Cast castExpression, String[] assertions) throws NotFoundException {
+        String assertion = null;
+
+        for(String s : assertions) {
+            if(s.equals(castExpression.getType().getName())) {
+                assertion = castExpression.getType().getName();
+                break;
+            }
+        }
+
+        return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getSelfCastExpression(castExpression);
+    }
+
+    private String getSelfCastExpression(Cast castExpression) {
+        try {
+            String castingClass = castExpression.getEnclosingClass().getName();
+            String castClass = castExpression.getType().getName();
+
+            return "(\"" + castingClass + "\"" + ".equals(\"" + castClass + "\"))";  
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        return "" + false;
+    }
+
+    private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
+        return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
+    }
+
+    private boolean exceptionPresent(Handler handler, String[] exceptions)  {
+        for(String s : exceptions) {
+            try {
+                if(handler.getType().getName().equals(s)) {
+                    return true;
+                }
+            } catch (NotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 
 }
