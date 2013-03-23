@@ -9,6 +9,40 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 	@Assertion("field > otherField")
 	int field;
 	
+	
+	public void validInit(){
+		field = 11;
+	}
+	
+	public void validWrite(){
+		field = 1234;
+	}
+	
+	public void invalidWrite(){
+		field = -1;
+	}
+	
+	public void superInvalidWrite() {
+		super.x = 10000;
+	}
+	
+	public void superValidWrite() {
+		super.x = 10;
+	}
+	
+	public void superInvalidReadWrite() {
+		super.x++;
+	}
+	
+	public void superInvalidReadWrite2() {
+		++super.x;
+	}
+	
+	public void superInvalideWrite2() {
+		s = "PO";
+	}
+
+	
 	public static void main(String[] args) {
 		
 		try {
@@ -83,37 +117,5 @@ public class TestFieldAssignment extends TestFieldFromSuper{
           } catch(RuntimeException e){
               printTestResult(System.err, FAIL, "changeSx", "");
           }
-	}
-	
-	public void validInit(){
-		field = 11;
-	}
-	
-	public void validWrite(){
-		field = 1234;
-	}
-	
-	public void invalidWrite(){
-		field = -1;
-	}
-	
-	public void superInvalidWrite() {
-	    super.x = 10000;
-	}
-	
-	public void superValidWrite() {
-        super.x = 10;
-    }
-	
-	public void superInvalidReadWrite() {
-        super.x++;
-    }
-	
-	public void superInvalidReadWrite2() {
-        ++super.x;
-    }
-	
-	public void superInvalideWrite2() {
-	    s = "PO";
 	}
 }

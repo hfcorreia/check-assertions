@@ -3,7 +3,7 @@ package ist.meic.pa.field;
 import ist.meic.pa.TestAssertion;
 import ist.meic.pa.assertions.Assertion;
 
-public class TestFieldInitialization extends TestAssertion{
+public class TestFieldInitialization extends TestAssertion {
 	
 	@Assertion("true")
 	int testField;

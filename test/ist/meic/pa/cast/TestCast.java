@@ -12,6 +12,7 @@ public class TestCast extends TestCastSuper {
 	
 	public static void main(String[] args) {
 
+		//testing a cast to an indirect super class
 		try{
 			TestCast testCast = new TestCast();
 			TestAssertion t = (TestAssertion) m1(testCast);
@@ -20,6 +21,7 @@ public class TestCast extends TestCastSuper {
 			printTestResult(System.err, FAIL, "cast" , "TestAssertion");
 		}
 		
+		//testing a cast to its own class
 		try{
 			TestCast testCast = new TestCast();
 			TestAssertion t = (TestCast) m1(testCast);
@@ -28,6 +30,7 @@ public class TestCast extends TestCastSuper {
 			printTestResult(System.err, FAIL, "cast" , "TestCast");
 		}
 		
+		//testing a cast to direct super class
 		try{
 			TestCast testCast = new TestCast();
 			Object t = (TestCastSuper) m1(testCast);
@@ -36,6 +39,7 @@ public class TestCast extends TestCastSuper {
 			printTestResult(System.err, FAIL, "cast" , "TestCastSuper");
 		}
 		
+		//testing a cast to an especified class
 		try{
 			TestCast testCast = new TestCast();
 			Object t = (TestCastSuperSuper) m1(testCast);

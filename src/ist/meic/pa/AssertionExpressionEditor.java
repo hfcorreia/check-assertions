@@ -46,13 +46,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 		try {
 			String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
 
-			String verifiedCastExpr = 
-					"if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + 
-							"$_ = $proceed($$);" + 
-					"}" + 
-					"else {" + 
-						"throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + 
-					"}";
+			String verifiedCastExpr = CastInterceptor.createCastTemplate(castExpression, castingClasses);
 
 			castExpression.replace(verifiedCastExpr);
 		} catch (NotFoundException e) {
@@ -72,13 +66,8 @@ public class AssertionExpressionEditor extends ExprEditor {
 			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
 				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
 				
-				if(exceptionPresent(handler, anotation.exception())) {
-					String invocatingMethod = 
-							"{" + 
-									"try {" +
-										ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-									"} catch (Exception e) { /* do nothing */ }" +
-							"}";
+				if(ExceptionInterceptor.exceptionPresent(handler, anotation.exception())) {
+					String invocatingMethod = ExceptionInterceptor.createCatchTemplate(ctClass, anotation);
 					handler.insertBefore(invocatingMethod);
 				}
 			}
@@ -88,47 +77,4 @@ public class AssertionExpressionEditor extends ExprEditor {
 			e.printStackTrace();
 		}
 	}
-	
-	private String generateCastAssertion(Cast castExpression, String[] assertions) throws NotFoundException {
-		String assertion = null;
-
-		for(String s : assertions) {
-			if(s.equals(castExpression.getType().getName())) {
-				assertion = castExpression.getType().getName();
-				break;
-			}
-		}
-		
-		return "(\"" + castExpression.getType().getName() + "\"" + ".equals(\"" + assertion + "\")) || " + getSelfCastExpression(castExpression);
-	}
-
-	private String getSelfCastExpression(Cast castExpression) {
-		try {
-			String castingClass = castExpression.getEnclosingClass().getName();
-			String castClass = castExpression.getType().getName();
-			
-			return "(\"" + castingClass + "\"" + ".equals(\"" + castClass + "\"))";  
-		} catch (NotFoundException e) {
-			e.printStackTrace();
-		}
-		return "" + false;
-	}
-
-	private String createCastErrorMessage(Cast castExpression) throws NotFoundException {
-		return "\"cast not allowed from class " + "<" + castExpression.getEnclosingClass().getName() + "> to " + "<" + castExpression.getType().getName() + ">\"";
-	}
-	
-	private boolean exceptionPresent(Handler handler, String[] exceptions)  {
-		for(String s : exceptions) {
-			try {
-				if(handler.getType().getName().equals(s)) {
-					return true;
-				}
-			} catch (NotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
 }

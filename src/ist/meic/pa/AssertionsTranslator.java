@@ -80,17 +80,12 @@ public class AssertionsTranslator implements Translator {
 		try {
 			String currentAssertion = ctConstructor.hasAnnotation(Assertion.class) ? ((Assertion) ctConstructor.getAnnotation(Assertion.class)).value() : "";
 
-			String superClassAssertion = getSuperClassAssertion(ctConstructor);
+			String superClassAssertion = ConstructorInterceptor.getSuperClassAssertion(ctConstructor);
 
 			String assertionExpression = MethodInterceptor.unionAsserExpressions(currentAssertion, superClassAssertion);
 
 			if(!assertionExpression.isEmpty()) {
-				String constructorVerification = 
-						" { " +
-								"	" + "if(!("+ assertionExpression + ")) {" +
-								"	" + "	" + "throw new java.lang.RuntimeException(\"The assertion " + assertionExpression + " is false\");" +
-								"	" + " } " + 
-								" } ";
+				String constructorVerification = ConstructorInterceptor.createConstructorVerification(assertionExpression);
 				ctConstructor.insertAfter(constructorVerification);
 			}
 		}catch (CannotCompileException e) {
@@ -98,41 +93,5 @@ public class AssertionsTranslator implements Translator {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} 
-	}
-
-	private String getSuperClassAssertion(CtConstructor ctConstructor) {
-		String superClassAssertion = "";
-		try {
-			CtConstructor superClassConstructor = ctConstructor.getDeclaringClass().getSuperclass().getConstructor(ctConstructor.getSignature());
-			superClassAssertion = getSuperClassConstructorExpression(superClassConstructor);
-		} catch (NotFoundException e) {
-			superClassAssertion = "";
-		}
-		return superClassAssertion;
-	}
-
-	/*
-	 * gets superclasses assertions on constructors with same signature. Recursive implementation 
-	 */
-	private String getSuperClassConstructorExpression(CtConstructor ctConstructor) {
-		String currentAssert = "";
-		String superAssert = "";
-
-		try {
-			currentAssert = ctConstructor.hasAnnotation(Assertion.class) ? ((Assertion) ctConstructor.getAnnotation(Assertion.class)).value() : "";
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			CtClass superClass = ctConstructor.getDeclaringClass().getSuperclass();
-			if(superClass != null) {
-				superAssert = getSuperClassConstructorExpression(superClass.getConstructor(ctConstructor.getSignature()));
-			}
-		} catch (NotFoundException e) {
-			//do nothing
-		}
-
-		return MethodInterceptor.unionAsserExpressions(currentAssert, superAssert);
 	}
 }
