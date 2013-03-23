@@ -17,7 +17,6 @@ public class TestExceptionHandler extends TestAssertion{
 		throw new NullPointerException();
 	}
 	
-	
 	public static void main(String[] args) {
 
 		try{
@@ -40,8 +39,6 @@ public class TestExceptionHandler extends TestAssertion{
 			// TODO Auto-generated catch block
 		}
 	}
-
-	
 	
 	public void catchMethod() {
 		System.out.println("FOUND A ASSERTED EXCEPTION");

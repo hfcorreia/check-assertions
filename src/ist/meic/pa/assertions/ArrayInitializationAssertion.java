@@ -6,9 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR})
-public @interface Assertion {
-	
-	String value() default "";
-	String before() default ""; 
+@Target({ ElementType.TYPE })
+
+public  @interface ArrayInitializationAssertion {
+    boolean value() default true;
 }

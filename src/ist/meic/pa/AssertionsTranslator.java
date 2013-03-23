@@ -1,11 +1,7 @@
 package ist.meic.pa;
 
+import ist.meic.pa.assertions.ArrayInitializationAssertion;
 import ist.meic.pa.assertions.Assertion;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CodeConverter;
@@ -20,16 +16,13 @@ import javassist.Translator;
 public class AssertionsTranslator implements Translator {
 	private static final String ARRAY_INTERCEPTOR = "ist.meic.pa.ArrayInterceptor";
 
-	@Override
-	public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
-		CtClass ctClass = pool.get(className);
+    @Override
+    public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
+        CtClass ctClass = pool.get(className);
+        if (!className.equals(ARRAY_INTERCEPTOR)) {
 
-		if (!className.equals(ARRAY_INTERCEPTOR)) {
-			CodeConverter conv = new CodeConverter();
-			CtClass arrayClass = pool.get(ARRAY_INTERCEPTOR);
+            instrumentArrays(pool, ctClass);
 
-			conv.replaceArrayAccess(arrayClass, new CodeConverter.DefaultArrayAccessReplacementMethodNames());
-			ctClass.instrument(conv);
 			ctClass.instrument(new AssertionExpressionEditor());
 
 			for (CtMethod ctMethod : ctClass.getDeclaredMethods()) {
@@ -42,13 +35,21 @@ public class AssertionsTranslator implements Translator {
 		}
 	}
 
+    void instrumentArrays(ClassPool pool, CtClass ctClass) throws NotFoundException, CannotCompileException {
+        if (ctClass.hasAnnotation(ArrayInitializationAssertion.class)) {
+            CtClass arrayClass = pool.get(ARRAY_INTERCEPTOR);
+            CodeConverter conv = new CodeConverter();
+            conv.replaceArrayAccess(arrayClass, new CodeConverter.DefaultArrayAccessReplacementMethodNames());
+            ctClass.instrument(conv);
+        }
+    }
+
 	@Override
 	public void start(ClassPool classPool) throws NotFoundException, CannotCompileException {
 		// do nothing
 	}
 
 	private void assertionVerifier(CtClass ctClass, CtMethod originalMethod) throws NotFoundException {
-
 		String beforeMethodAssertion = MethodInterceptor.getBeforeMethodAssertionExpression(ctClass, originalMethod);
 		String afterMethodAssertion = MethodInterceptor.getAfterMethodAssertionExpression(ctClass, originalMethod);
 

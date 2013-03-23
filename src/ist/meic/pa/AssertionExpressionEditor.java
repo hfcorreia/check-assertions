@@ -16,7 +16,7 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(FieldAccess fieldAccess) {
 		CtClass ctClass = fieldAccess.getEnclosingClass();
-		
+
 		try {
 			if(fieldAccess.getField().hasAnnotation(Assertion.class)){
 				FieldInterceptor.createAuxiliaryFields(ctClass, fieldAccess.getField());
@@ -44,11 +44,11 @@ public class AssertionExpressionEditor extends ExprEditor {
 	@Override
 	public void edit(Cast castExpression) {
 		try {
-			String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
-
-			String verifiedCastExpr = CastInterceptor.createCastTemplate(castExpression, castingClasses);
-
-			castExpression.replace(verifiedCastExpr);
+			if(castExpression.getEnclosingClass().hasAnnotation(CastAssertion.class)) {
+				String[] castingClasses = ((CastAssertion) castExpression.getEnclosingClass().getAnnotation(CastAssertion.class)).value();
+				String verifiedCastExpr = CastInterceptor.createCastTemplate(castExpression, castingClasses);
+				castExpression.replace(verifiedCastExpr);
+			}
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -62,10 +62,10 @@ public class AssertionExpressionEditor extends ExprEditor {
 	public void edit(Handler handler) {
 		try {
 			CtClass ctClass = handler.where().getDeclaringClass();
-			
+
 			if(ctClass.hasAnnotation(ExceptionAssertion.class)) {
 				ExceptionAssertion anotation = (ExceptionAssertion) ctClass.getAnnotation(ExceptionAssertion.class);
-				
+
 				if(ExceptionInterceptor.exceptionPresent(handler, anotation.exception())) {
 					String invocatingMethod = ExceptionInterceptor.createCatchTemplate(ctClass, anotation);
 					handler.insertBefore(invocatingMethod);

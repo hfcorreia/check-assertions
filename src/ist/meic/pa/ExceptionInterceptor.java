@@ -10,7 +10,9 @@ public class ExceptionInterceptor {
 	public static boolean exceptionPresent(Handler handler, String[] exceptions)  {
 		for(String s : exceptions) {
 			try {
-				return handler.getType().getName().equals(s);
+				if(handler.getType().getName().equals(s)) {
+					return true;
+				}
 			} catch (NotFoundException e) {
 				e.printStackTrace();
 			}
