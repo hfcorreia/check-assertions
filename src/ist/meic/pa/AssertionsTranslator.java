@@ -1,5 +1,6 @@
 package ist.meic.pa;
 
+import ist.meic.pa.assertions.ArrayInitializationAssertion;
 import ist.meic.pa.assertions.Assertion;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
