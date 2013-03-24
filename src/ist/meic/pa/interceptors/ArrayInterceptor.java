@@ -70,7 +70,7 @@ public class ArrayInterceptor {
         double[] array = (double[]) obj;
         return array[index];
     }
-    
+
     public static void arrayWriteFloat(Object obj, int index, float newValue) {
         float[] array = (float[]) obj;
         array[index] = newValue;
@@ -83,19 +83,43 @@ public class ArrayInterceptor {
         float[] array = (float[]) obj;
         return array[index];
     }
-    public static void arrayWriteByteOrBoolean(Object obj, int index, byte newValue) {
-        byte[] array = (byte[]) obj;
-        array[index] = newValue;
 
-        initialize(obj, index, array.length);
+    public static void arrayWriteByteOrBoolean(Object obj, int index, byte newValue) {
+        if (obj instanceof byte[]) {
+            byte[] array = (byte[]) obj;
+            array[index] = newValue;
+
+            initialize(obj, index, array.length);
+
+        } else if (obj instanceof boolean[]) {
+            boolean[] array = (boolean[]) obj;
+            if (newValue == 1)
+                array[index] = true;
+            else
+                array[index] = false;
+
+            initialize(obj, index, array.length);
+
+        }
+
     }
-    
+
     public static byte arrayReadByteOrBoolean(Object obj, int index) throws RuntimeException {
         testAccess(obj, index);
+
+        if (obj instanceof boolean[]) {
+            boolean[] array = (boolean[]) obj;
+            if (array[index])
+                return (byte) 1;
+            else
+                return (byte) 0;
+        }
+
         byte[] array = (byte[]) obj;
         return array[index];
+
     }
-    
+
     public static Object arrayReadObject(Object obj, int index) {
         if (obj.getClass().isArray()) {
             Object[] objectArray = (Object[]) obj;

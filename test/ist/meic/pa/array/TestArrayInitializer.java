@@ -109,7 +109,7 @@ public class TestArrayInitializer extends TestAssertion {
 
     public void booleanAccess() {
         boolean[][] booleans = new boolean[2][2];
-        booleans[1][1] = true;
+        booleans[1][1] = false;
         boolean x = booleans[1][1];
     }
 
