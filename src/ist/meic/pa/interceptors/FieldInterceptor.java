@@ -1,4 +1,4 @@
-package ist.meic.pa;
+package ist.meic.pa.interceptors;
 
 import javassist.CannotCompileException;
 import javassist.CtClass;

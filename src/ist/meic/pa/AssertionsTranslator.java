@@ -2,6 +2,8 @@ package ist.meic.pa;
 
 import ist.meic.pa.assertions.ArrayInitializationAssertion;
 import ist.meic.pa.assertions.Assertion;
+import ist.meic.pa.interceptors.ConstructorInterceptor;
+import ist.meic.pa.interceptors.MethodInterceptor;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CodeConverter;

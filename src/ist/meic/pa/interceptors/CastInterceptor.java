@@ -1,4 +1,4 @@
-package ist.meic.pa;
+package ist.meic.pa.interceptors;
 
 import javassist.NotFoundException;
 import javassist.expr.Cast;
