@@ -16,7 +16,7 @@ import javassist.NotFoundException;
 import javassist.Translator;
 
 public class AssertionsTranslator implements Translator {
-	private static final String ARRAY_INTERCEPTOR = "ist.meic.pa.ArrayInterceptor";
+	private static final String ARRAY_INTERCEPTOR = "ist.meic.pa.interceptors.ArrayInterceptor";
 
     @Override
     public void onLoad(ClassPool pool, String className) throws NotFoundException, CannotCompileException {
