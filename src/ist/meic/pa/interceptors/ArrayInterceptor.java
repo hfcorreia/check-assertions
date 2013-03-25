@@ -93,13 +93,9 @@ public class ArrayInterceptor {
 
         } else if (obj instanceof boolean[]) {
             boolean[] array = (boolean[]) obj;
-            if (newValue == 1)
-                array[index] = true;
-            else
-                array[index] = false;
+            array[index] = (newValue != 0);
 
             initialize(obj, index, array.length);
-
         }
 
     }
