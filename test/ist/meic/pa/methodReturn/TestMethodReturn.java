@@ -66,6 +66,11 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 	public int mInterfaceBoth(int x) {
 		return 0;
 	}
+	
+	@Assertion("$1 > 0")
+	static public int staticMethod(int x) {
+		return x;
+	}
 
 	public static void main(String[] args) {
 		try{
@@ -260,6 +265,20 @@ public class TestMethodReturn extends TestMethodReturnSuper implements TestMetho
 			printTestResult(System.err, PASS, "inc1" , "10");
 		} catch(RuntimeException e){
 			printTestResult(System.err, FAIL, "inc1" , "10");
+		}
+		
+		try {
+			TestMethodReturn.staticMethod(10);
+			printTestResult(System.err, PASS, "static" , "10");
+		} catch(RuntimeException e) {
+			printTestResult(System.err, FAIL, "static" , "10");
+		}
+		
+		try {
+			TestMethodReturn.staticMethod(-10);
+			printTestResult(System.err, FAIL, "static" , "-10");
+		} catch(RuntimeException e) {
+			printTestResult(System.err, PASS, "static" , "-10");
 		}
 
 	}
