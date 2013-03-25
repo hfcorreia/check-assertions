@@ -5,6 +5,11 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 import javassist.expr.Handler;
 
+/**
+ * 
+ * class with some util methods for intercepting catch blocks 
+ *
+ */
 public class ExceptionInterceptor {
 
 	public static boolean exceptionPresent(Handler handler, String[] exceptions)  {
@@ -20,6 +25,11 @@ public class ExceptionInterceptor {
 		return false;
 	}
 	
+	/**
+	 *
+	 * creates template for injecting code on catch block
+	 * 
+	 */
 	public static String createCatchTemplate(CtClass ctClass, ExceptionAssertion anotation) {
 		return "{" + 
 				"try {" +

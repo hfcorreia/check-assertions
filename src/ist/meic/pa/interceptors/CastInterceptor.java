@@ -3,8 +3,18 @@ package ist.meic.pa.interceptors;
 import javassist.NotFoundException;
 import javassist.expr.Cast;
 
+/**
+ * 
+ * class with some util methods for intercepting casts 
+ *
+ */
 public class CastInterceptor {
 
+	/**
+	 *
+	 * creates injecting code for verifing cast validation
+	 * 
+	 */
 	public static String createCastTemplate(Cast castExpression, String[] castingClasses) throws NotFoundException {
         return " if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + "$_ = $proceed($$);" + "}"
                 + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";

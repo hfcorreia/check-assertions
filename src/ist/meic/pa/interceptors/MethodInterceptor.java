@@ -10,14 +10,29 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 
+/**
+ * 
+ * class with some util methods for intercepting method 
+ *
+ */
 public class MethodInterceptor {
 
+	/**
+	 *
+	 * method for create new method body. New body calls a copy from original method
+	 * 
+	 */
 	public static String createOriginalTemplate(String auxiliarMethodName) {
 		return " { " +
 				"	" + "return ($r) " + auxiliarMethodName + "($$);" + 
 				" } ";
 	}
 
+	/**
+	 *
+	 * creates method template for asserting params on method exiting
+	 * 
+	 */
 	public static String createAfterTemplate(CtMethod originalMethod, String afterMethodAssertion, String auxiliarMethodName) throws NotFoundException {
 		return " { " +
 				"	" + originalMethod.getReturnType().getName() + " $_ = " + auxiliarMethodName + "($$);" +
@@ -27,6 +42,11 @@ public class MethodInterceptor {
 				" } ";
 	}
 
+	/**
+	 *
+	 * creates method template for asserting params on method entry
+	 * 
+	 */
 	public static String createBeforeTemplate(String beforeMethodAssertion) {
 		return " { " +  
 				"	" + "if( ! ( " + beforeMethodAssertion + ") ) {" +
@@ -35,6 +55,11 @@ public class MethodInterceptor {
 				" } ";
 	}
 	
+	/**
+	 *
+	 * get recursive assertion expression for exiting assert
+	 * 
+	 */
 	public static String getAfterMethodAssertionExpression(CtClass ctClass, CtMethod ctMethod) {
 		String assertionExpression = "";
 
@@ -45,6 +70,11 @@ public class MethodInterceptor {
 		return assertionExpression;
 	}
 
+	/**
+	 *
+	 * get recursive assertion expression for method entry assert
+	 * 
+	 */
 	public static String getBeforeMethodAssertionExpression(CtClass ctClass, CtMethod ctMethod) {
 		String assertionExpression = "";
 

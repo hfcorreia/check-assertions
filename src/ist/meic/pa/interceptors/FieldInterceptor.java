@@ -5,8 +5,19 @@ import javassist.CtClass;
 import javassist.CtField;
 import javassist.NotFoundException;
 
+/** 
+ * * 
+ * class with some util methods for intercepting field accesses 
+ *
+ */
 public class FieldInterceptor {
 
+	/**
+	 *
+	 * method responsible for creating auxiliar fields;
+	 * this auxiliars fields help to verify if a field is initialized
+	 * 
+	 */
 	public static void createAuxiliaryFields(CtClass ctClass, CtField ctField) throws CannotCompileException, NotFoundException {
 		String fieldName = ctField.getName();
 
@@ -30,6 +41,11 @@ public class FieldInterceptor {
 		}
 	}
 
+	/**
+	 *
+	 * creates the injecting code for verifing uninitialized fields
+	 * 
+	 */
 	public static String createReadFieldBody(String fieldName) {
 		return 	"{ " +
 				"   " + "if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
@@ -40,6 +56,11 @@ public class FieldInterceptor {
 				"}";
 	}
 
+	/**
+	 *
+	 * creates the injecting code for verifing asserted fields
+	 * 
+	 */
 	public static String createWriteFieldBody(String assertExpression, String fieldName ) {
 		return 	"{ " + 
 					fieldName + "$isInitializedTemp = " + fieldName + "$isInitialized;" + 

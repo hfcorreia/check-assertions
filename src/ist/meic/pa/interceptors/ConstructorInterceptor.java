@@ -5,8 +5,18 @@ import javassist.CtClass;
 import javassist.CtConstructor;
 import javassist.NotFoundException;
 
+/**
+ * 
+ * class with some util methods for intercepting constructors 
+ *
+ */
 public class ConstructorInterceptor {
 
+	/**
+	 *
+	 * gets recursive assertion expression for constructor
+	 * 
+	 */
 	public static String getSuperClassAssertion(CtConstructor ctConstructor) {
 		String superClassAssertion = "";
 		try {
@@ -18,8 +28,10 @@ public class ConstructorInterceptor {
 		return superClassAssertion;
 	}
 
-	/*
+	/**
+	 * 
 	 * gets superclasses assertions on constructors with same signature. Recursive implementation 
+	 * 
 	 */
 	private static String getSuperClassConstructorExpression(CtConstructor ctConstructor) {
 		String currentAssert = "";
@@ -43,6 +55,11 @@ public class ConstructorInterceptor {
 		return MethodInterceptor.unionAsserExpressions(currentAssert, superAssert);
 	}
 	
+	/**
+	 *
+	 * creates injecting code for verifing constructor assert expression
+	 * 
+	 */
 	public static String createConstructorVerification(String assertionExpression) {
 		return " { " +
 				"	" + "if(!("+ assertionExpression + ")) {" +
