@@ -6,12 +6,8 @@ import javassist.expr.Cast;
 public class CastInterceptor {
 
 	public static String createCastTemplate(Cast castExpression, String[] castingClasses) throws NotFoundException {
-		return "if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + 
-				"$_ = $proceed($$);" + 
-		"}" + 
-		"else {" + 
-			"throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + 
-		"}";
+        return " if(" + generateCastAssertion(castExpression, castingClasses) + ") {" + "$_ = $proceed($$);" + "}"
+                + "else {" + "throw new RuntimeException(" + createCastErrorMessage(castExpression) + ");" + "}";
 	}
 	
 	private static String generateCastAssertion(Cast castExpression, String[] assertions) throws NotFoundException {

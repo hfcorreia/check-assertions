@@ -3,6 +3,12 @@ package ist.meic.pa.interceptors;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * 
+ * ArrayInterceptor - defines static methods to replace array access.
+ *      Maintains a HashMap of arrays with already initialized indexes of an array.
+ *
+ */
 public class ArrayInterceptor {
     public static HashMap<Object, ArrayList<Boolean>> arrays = new HashMap<Object, ArrayList<Boolean>>();
 
