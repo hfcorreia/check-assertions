@@ -3,6 +3,11 @@ package ist.meic.pa;
 import javassist.ClassPool;
 import javassist.tools.reflect.Loader;
 
+/**
+ *
+ * Entry point, receiving checking class as a parameter
+ *
+ */
 public class CheckAssertions {
 
 	public static void main(String[] args) throws Throwable {

@@ -15,6 +15,11 @@ import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.Translator;
 
+/**
+ *
+ * translator responsible for computing given class bytecodes
+ *
+ */
 public class AssertionsTranslator implements Translator {
 	private static final String ARRAY_INTERCEPTOR = "ist.meic.pa.interceptors.ArrayInterceptor";
 
@@ -51,6 +56,11 @@ public class AssertionsTranslator implements Translator {
 		// do nothing
 	}
 
+	/**
+	 *
+	 * method that modifies class methods in order to assert the given expression 
+	 * 
+	 */
 	private void assertionVerifier(CtClass ctClass, CtMethod originalMethod) throws NotFoundException {
 		String beforeMethodAssertion = MethodInterceptor.getBeforeMethodAssertionExpression(ctClass, originalMethod);
 		String afterMethodAssertion = MethodInterceptor.getAfterMethodAssertionExpression(ctClass, originalMethod);
@@ -79,6 +89,11 @@ public class AssertionsTranslator implements Translator {
 		}
 	}
 
+	/**
+	 *
+	 * method that modifies class constructors in order to assert the given expression 
+	 * 
+	 */
 	private void assertionVerifier(CtConstructor ctConstructor) {
 		try {
 			String currentAssertion = ctConstructor.hasAnnotation(Assertion.class) ? ((Assertion) ctConstructor.getAnnotation(Assertion.class)).value() : "";
