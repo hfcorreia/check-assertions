@@ -16,6 +16,11 @@ import javassist.expr.Handler;
 
 public class AssertionExpressionEditor extends ExprEditor {
 
+	/**
+	 * 
+	 * Edits field accesses checking initialization and assertions
+	 * 
+	 */
 	@Override
 	public void edit(FieldAccess fieldAccess) {
 		CtClass ctClass = fieldAccess.getEnclosingClass();
@@ -44,6 +49,11 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
+	/**
+	 * 
+	 * Garantees only desired casts are made
+	 * 
+	 */
 	@Override
 	public void edit(Cast castExpression) {
 		try {
@@ -61,6 +71,11 @@ public class AssertionExpressionEditor extends ExprEditor {
 		}
 	}
 
+	/**
+	 * 
+	 * Calls desired method on catch clauses for specified Exceptions
+	 * 
+	 */
 	@Override
 	public void edit(Handler handler) {
 		try {
