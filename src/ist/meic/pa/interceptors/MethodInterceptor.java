@@ -38,7 +38,8 @@ public class MethodInterceptor {
 				"	" + originalMethod.getReturnType().getName() + " $_ = " + auxiliarMethodName + "($$);" +
 				"	" + "if( ! ( " + afterMethodAssertion + " ) ) { " +
 				"	" + "	"  + "throw new java.lang.RuntimeException(\""+ createErrorMessage(afterMethodAssertion)+"\");" +
-				"	" + "}" + "	" + "return ($r)$_;" + 
+				"	" + "}" + 
+				"	" + "return ($r)$_;" + 
 				" } ";
 	}
 
@@ -116,7 +117,7 @@ public class MethodInterceptor {
 		return result;
 	}
 
-	private static boolean hasValidSuperclass(CtClass ctClass) {
+	public static boolean hasValidSuperclass(CtClass ctClass) {
 			try {
 				return ctClass!=null && ctClass.getSuperclass()!=null;
 			} catch (NotFoundException e) {

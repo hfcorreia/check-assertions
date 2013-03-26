@@ -6,8 +6,12 @@ import ist.meic.pa.interceptors.ConstructorInterceptor;
 import ist.meic.pa.interceptors.FieldInterceptor;
 import ist.meic.pa.interceptors.MethodInterceptor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -38,10 +42,7 @@ public class AssertionsTranslator implements Translator {
 
 			ctClass.instrument(new AssertionExpressionEditor());
 			
-			HashSet<CtField> allClassFields = new HashSet<CtField>();
-			allClassFields.addAll( Arrays.asList( ctClass.getFields() ) );
-			allClassFields.addAll( Arrays.asList( ctClass.getDeclaredFields() ) );
-			for (CtField ctField : allClassFields) {
+			for (CtField ctField : FieldInterceptor.findClassFields(ctClass)) {
 				assertionVerifier(ctClass, ctField);
 			}
 			
@@ -55,7 +56,7 @@ public class AssertionsTranslator implements Translator {
 		}
 	}
 
-    private void assertionVerifier(CtClass ctClass, CtField ctField) {
+	private void assertionVerifier(CtClass ctClass, CtField ctField) {
         if (ctField.hasAnnotation(Assertion.class))
 			try {
 					Assertion assertion = (Assertion) ctField.getAnnotation(Assertion.class);
@@ -63,9 +64,9 @@ public class AssertionsTranslator implements Translator {
 					FieldInterceptor.createAuxiliaryFields(ctClass, ctField);
 					FieldInterceptor.createAuxiliaryMethods(ctClass, ctField, assertion);
 					
-					CtMethod newReadMethod = CtNewMethod.make(createReadAssertionMethodTemplate(ctField.getName(), ctField.getType().getName(), ctClass.getName()), ctClass);
+					CtMethod newReadMethod = CtNewMethod.make(FieldInterceptor.createReadAssertionMethodTemplate(ctField.getName(), ctField.getType().getName(), ctClass.getName()), ctClass);
 					
-					CtMethod newWriteMethod = CtNewMethod.make(createWriteAssertionMethodTemplate(ctField.getName(), ctField.getType().getName(), assertion.value(), ctClass.getName(), Modifier.isStatic(ctField.getModifiers())),ctClass);
+					CtMethod newWriteMethod = CtNewMethod.make(FieldInterceptor.createWriteAssertionMethodTemplate(ctField.getName(), ctField.getType().getName(), assertion.value(), ctClass.getName(), Modifier.isStatic(ctField.getModifiers())),ctClass);
 					
 					CodeConverter codeConverter = new CodeConverter();
 					codeConverter.replaceFieldRead(ctField, ctClass, newReadMethod.getName());
@@ -84,54 +85,7 @@ public class AssertionsTranslator implements Translator {
 	}
 
 
-	private String createReadAssertionMethodTemplate(String fieldName, String methodType, String className) {
-		String methodName = fieldName + "_assertion";
-		String isInitialized = fieldName + "$isInitialized";
-		String template =
-				"public static " + methodType + " " + methodName +" (Object target) { " +
-					" if( "+ isInitialized +" ){" +
-					"	return " + "( ( " + className + " )   target  )." + fieldName + ";" +
-					" } " +
-					" else { " +
-					"	throw new java.lang.RuntimeException(\"Error: " + fieldName + " was not initialized\"); " +
-					" } "+
-				" } ";
-		return template;
-	}
-	
-	private String createWriteAssertionMethodTemplate(String fieldName, String fieldType, String originalAssertExpression, String className, boolean isStaticMethod) {
-		String methodName = fieldName + "$writeAssertion";
-		String originalField = "((" + className + ") target )." + fieldName;
-		String isInitializedTemp = fieldName + "$isInitializedTemp";
-		String isInitialized = fieldName + "$isInitialized";
-		String originalValueCopy = fieldName + "$tmpValue";
-		String isRunningField = fieldName + "$isRunning";
-		String prefix = !isStaticMethod ? "((" + className + ") target )." : "";
-		String assertExpression = prefix + fieldName+"$assertExpression()";
-		
-		String template =
-				"public static public void " + methodName + " (Object target, " + fieldType + " newValue) { " +
-						isRunningField + " = true;" +
-						"boolean " + isInitializedTemp + " = " + isInitialized + ";" + 
-						
-						isInitialized + " = true;" +
-						
-						fieldType + " " + originalValueCopy + " = " + originalField +  ";" + 
-						
-						originalField + " =  newValue ;" +
-						
-						"if( ! " + assertExpression + " ) {" + 
-							originalField + " = " + originalValueCopy + ";" + 
-							isInitialized + " = " + isInitializedTemp + ";" + 
-							"throw new java.lang.RuntimeException(" + createErrorMessage(originalAssertExpression) + ");" + 
-						"}" +
-				"}";
-		return template;
-	}
 
-	public static String createErrorMessage(String assertExpression) {
-		return "\"The assertion " + assertExpression +" is false\"";
-	}
 
 	
 

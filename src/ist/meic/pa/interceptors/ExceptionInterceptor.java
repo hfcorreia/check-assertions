@@ -31,11 +31,13 @@ public class ExceptionInterceptor {
 	 * 
 	 */
 	public static String createCatchTemplate(CtClass ctClass, ExceptionAssertion anotation) {
-		return "{" + 
-				"try {" +
-					ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
-				"} catch (Exception e) { /* do nothing */ }" +
-		"}";
+		return " { " + 
+				"	" + "try { " +
+				"	" + "	" + ctClass.getName() + ".class.getMethod(\"" + anotation.method() + "\", null).invoke(new " + ctClass.getName() + "(), null);" +
+				"	" + " }  catch (Exception e) { " + 
+				"	" + "/* do nothing */ " + 
+				"	" + " } " +
+				" } ";
 	}
 	
 }

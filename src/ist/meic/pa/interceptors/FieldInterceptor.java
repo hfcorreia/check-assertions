@@ -1,5 +1,8 @@
 package ist.meic.pa.interceptors;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import ist.meic.pa.assertions.Assertion;
 import javassist.CannotCompileException;
 import javassist.CtClass;
@@ -16,6 +19,56 @@ import javassist.NotFoundException;
  */
 public class FieldInterceptor {
 
+	public static String createReadAssertionMethodTemplate(String fieldName, String methodType, String className) {
+		String methodName = fieldName + "$assertion";
+		String isInitialized = fieldName + "$isInitialized";
+		String template =
+				"public static " + methodType + " " + methodName +" (Object target) { " +
+					" if( "+ isInitialized +" ){" +
+					"	return " + "( ( " + className + " )   target  )." + fieldName + ";" +
+					" } " +
+					" else { " +
+					"	throw new java.lang.RuntimeException(\"Error: " + fieldName + " was not initialized\"); " +
+					" } "+
+				" } ";
+		return template;
+	}
+	
+	public static String createWriteAssertionMethodTemplate(String fieldName, String fieldType, String originalAssertExpression, String className, boolean isStaticMethod) {
+		String methodName = fieldName + "$writeAssertion";
+		String originalField = "((" + className + ") target )." + fieldName;
+		String isInitializedTemp = fieldName + "$isInitializedTemp";
+		String isInitialized = fieldName + "$isInitialized";
+		String originalValueCopy = fieldName + "$tmpValue";
+		String isRunningField = fieldName + "$isRunning";
+		String prefix = !isStaticMethod ? "((" + className + ") target )." : "";
+		String assertExpression = prefix + fieldName+"$assertExpression()";
+		
+		String template =
+				"public static public void " + methodName + " (Object target, " + fieldType + " newValue) { " +
+						isRunningField + " = true;" +
+						"boolean " + isInitializedTemp + " = " + isInitialized + ";" + 
+						
+						isInitialized + " = true;" +
+						
+						fieldType + " " + originalValueCopy + " = " + originalField +  ";" + 
+						
+						originalField + " =  newValue ;" +
+						
+						"if( ! " + assertExpression + " ) { " + 
+							originalField + " = " + originalValueCopy + ";" + 
+							isInitialized + " = " + isInitializedTemp + ";" + 
+							"throw new java.lang.RuntimeException( " + createErrorMessage(originalAssertExpression) + " );" + 
+						" } " +
+				" } ";
+		return template;
+	}
+
+	public static String createErrorMessage(String assertExpression) {
+		return "\"The assertion " + assertExpression +" is false\"";
+	}
+	
+	
 	/**
 	 *
 	 * method responsible for creating auxiliar fields;
@@ -32,22 +85,44 @@ public class FieldInterceptor {
 			CtField isRunning = new CtField(CtClass.booleanType, fieldName + "$isRunning", ctClass);
 			isRunning.setModifiers(Modifier.STATIC);
 			
-//			CtField isInitializedTempField = new CtField(CtClass.booleanType, fieldName + "$isInitializedTemp", ctClass);
-//			isInitializedTempField.setModifiers(Modifier.STATIC);
-
-//			CtField tmpValueField = new CtField(ctClass.getField(fieldName).getType(), fieldName + "$tmpValue", ctClass);
-//			tmpValueField.setModifiers(Modifier.STATIC);
-
 			ctClass.addField(isInitializedField, "false");
 			ctClass.addField(isRunning, "false");
 			
-			//ctClass.addField(isInitializedTempField);
-//			ctClass.addField(tmpValueField);
 		}
 	}
 
 
-
+    public static Collection<CtField> findClassFields(CtClass ctClass) {
+		HashSet<CtField> result = new HashSet<CtField>();
+		HashSet<CtField> superFields = new HashSet<CtField>();
+		
+		if (MethodInterceptor.hasValidSuperclass(ctClass)) {
+			try {
+				superFields.addAll(findClassFields(ctClass.getSuperclass()));
+			} catch (NotFoundException e) { 	/* DO NOTHING */ 	}
+		
+			//add if does not allready exist in a superclass
+			for(CtField myField : ctClass.getFields()){
+				if(!existsField(superFields, myField)){
+					result.add(myField);
+				}
+			}
+			
+			result.addAll(superFields);
+		}
+		
+		return result;
+	}
+    
+    private static boolean existsField(Collection<CtField> allFields, CtField field){
+		for(CtField superField : allFields){
+			if(field.getName().equals(superField.getName())){
+				return true;
+			}
+		}
+		return false;
+    }
+	
 	private static boolean existsFields(CtClass ctClass, String fieldName) {
 		try {
 			ctClass.getField(fieldName);
@@ -55,44 +130,6 @@ public class FieldInterceptor {
 		} catch(NotFoundException nfe) {
 			return false;
 		}
-	}
-
-	/**
-	 *
-	 * creates the injecting code for verifing uninitialized fields
-	 * 
-	 */
-	public static String createReadFieldBody(String fieldName) {
-		return 	"{ " +
-				"   " + "if(! ( " + fieldName + "$isInitialized" + " ) ) {" + 
-				"   " + "   " + "throw new java.lang.RuntimeException(\"Error: " + fieldName + "was not initialized\");" + 
-				"   " + "} else {" + 
-				"   " + "   " + " $_ = $proceed(); " + 
-				"   " + "}" +
-				"}";
-	}
-
-	/**
-	 *
-	 * creates the injecting code for verifing asserted fields
-	 * 
-	 */
-	public static String createWriteFieldBody(String assertExpression, String fieldName ) {
-		return 	"{ " + 
-					fieldName + "$isInitializedTemp = " + fieldName + "$isInitialized;" + 
-					fieldName + "$isInitialized = true;" +
-					fieldName + "$tmpValue = " + fieldName +  ";" + 
-					"$proceed($$); " + 
-					"if( ! (" + assertExpression + ") ) {" + 
-						fieldName + " = " + fieldName + "$tmpValue;" + 
-						fieldName + "$isInitialized = " + fieldName + "$isInitializedTemp;" + 
-						"throw new java.lang.RuntimeException(" + createErrorMessage(assertExpression) + ");" + 
-					"}" +
-				"}";
-	} 
-
-	public static String createErrorMessage(String assertExpression) {
-		return "\"The assertion " + assertExpression +" is false\"";
 	}
 
 	public static void createAuxiliaryMethods(CtClass ctClass, CtField ctField, Assertion assertion) {

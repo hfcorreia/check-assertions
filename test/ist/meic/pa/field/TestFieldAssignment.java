@@ -38,11 +38,6 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 		++super.x;
 	}
 	
-	public void superInvalideWrite2() {
-		super.s = "PO";
-	}
-
-	
 	public static void main(String[] args) {
 		
 		try {
@@ -100,14 +95,6 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 	        } catch(RuntimeException e){
 	            printTestResult(System.out, PASS, "superInvalidWrite", "");
 	        }
-	      
-	      try {
-              TestFieldAssignment fieldAssignment = new TestFieldAssignment();
-              fieldAssignment.superInvalideWrite2();
-              printTestResult(System.err, FAIL, "superInvalideWrite2", "");
-          } catch(RuntimeException e){
-        	  printTestResult(System.out, PASS, "superInvalideWrite2", "");
-          }
 	      
 	      try {
               TestFieldAssignment fieldAssignment = new TestFieldAssignment();
