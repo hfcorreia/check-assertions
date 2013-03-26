@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="checkassertions" basedir=".">
+<project name="checkassertions" basedir="." default="jar">
 	<property name="src" location="src" />
 	<property name="build" location="bin" />
 	<property name="base" value="ist.meic.pa" />
@@ -107,6 +107,10 @@
 	<target name="clean" description="Cleans build files">
 		<delete dir="${build}" />
         <delete dir="ist" />
+	</target>
+	
+	<target name="jar" description="generates the jar file" depends="compile">
+		<jar destfile="checkassertions.jar"></jar>
 	</target>
 	
 
