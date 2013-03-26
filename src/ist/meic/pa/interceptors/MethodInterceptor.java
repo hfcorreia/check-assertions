@@ -37,7 +37,7 @@ public class MethodInterceptor {
 		return " { " +
 				"	" + originalMethod.getReturnType().getName() + " $_ = " + auxiliarMethodName + "($$);" +
 				"	" + "if( ! ( " + afterMethodAssertion + " ) ) { " +
-				"	" + "	"  + "throw new java.lang.RuntimeException(\"\");" +
+				"	" + "	"  + "throw new java.lang.RuntimeException(\""+ createErrorMessage(afterMethodAssertion)+"\");" +
 				"	" + "}" + "	" + "return ($r)$_;" + 
 				" } ";
 	}
@@ -50,7 +50,7 @@ public class MethodInterceptor {
 	public static String createBeforeTemplate(String beforeMethodAssertion) {
 		return " { " +  
 				"	" + "if( ! ( " + beforeMethodAssertion + ") ) {" +
-				"	" + "	" + "throw new java.lang.RuntimeException(\"\");" +
+				"	" + "	" + "throw new java.lang.RuntimeException(\""+ createErrorMessage(beforeMethodAssertion)+"\");" +
 				"	" + " } " + 
 				" } ";
 	}
@@ -158,4 +158,7 @@ public class MethodInterceptor {
 		return "";
 	}
 
+	private static String createErrorMessage(String assertion){
+		return "Method assertion ( "+ assertion +" ) failed";
+	}
 }

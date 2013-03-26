@@ -9,7 +9,7 @@ public class TestCast extends TestCastSuper {
 	public static Object m1(Object obj) {
 		return obj;
 	}
-	
+
 	public static void main(String[] args) {
 
 		//testing a cast to an indirect super class

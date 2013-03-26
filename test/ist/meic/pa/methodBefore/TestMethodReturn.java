@@ -1,10 +1,10 @@
 package ist.meic.pa.methodBefore;
 
+import ist.meic.pa.assertions.Assertion;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import ist.meic.pa.assertions.Assertion;
 
 /*
  * brincar com modificadores

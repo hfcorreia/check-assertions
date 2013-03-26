@@ -6,6 +6,7 @@ import ist.meic.pa.assertions.ArrayInitializationAssertion;
 @ArrayInitializationAssertion
 public class TestArrayInitializer extends TestAssertion {
 
+
     public TestArrayInitializer() {
     }
 

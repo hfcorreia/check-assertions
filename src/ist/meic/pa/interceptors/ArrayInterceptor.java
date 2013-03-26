@@ -152,13 +152,18 @@ public class ArrayInterceptor {
     static void initialize(Object obj, int index, int length) {
         ArrayList<Boolean> isInitialized = new ArrayList<Boolean>();
 
-        for (int i = 0; i < length; i++) {
-            if (i == index)
-                isInitialized.add(true);
-            else
-                isInitialized.add(false);
+        if(! arrays.containsKey(obj) ){
+	        for (int i = 0; i < length; i++) {
+	            if (i == index)
+	                isInitialized.add(true);
+	            else
+	                isInitialized.add(false);
+	        }
+	        arrays.put(obj, isInitialized);
         }
-
-        arrays.put(obj, isInitialized);
+        else { 
+        	ArrayList<Boolean> temp = arrays.get(obj);
+        	temp.set(index, true); 
+        }
     }
 }

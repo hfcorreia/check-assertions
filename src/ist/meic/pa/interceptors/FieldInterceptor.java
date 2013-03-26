@@ -1,8 +1,12 @@
 package ist.meic.pa.interceptors;
 
+import ist.meic.pa.assertions.Assertion;
 import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtMethod;
+import javassist.CtNewMethod;
+import javassist.Modifier;
 import javassist.NotFoundException;
 
 /** 
@@ -23,14 +27,26 @@ public class FieldInterceptor {
 
 		if (! existsFields(ctClass, fieldName + "$isInitialized") ) {
 			CtField isInitializedField = new CtField(CtClass.booleanType, fieldName + "$isInitialized", ctClass);
-			CtField isInitializedTempField = new CtField(CtClass.booleanType, fieldName + "$isInitializedTemp", ctClass);
-			CtField tmpValueField = new CtField(ctClass.getField(fieldName).getType(), fieldName + "$tmpValue", ctClass);
+			isInitializedField.setModifiers(Modifier.STATIC);
+			
+			CtField isRunning = new CtField(CtClass.booleanType, fieldName + "$isRunning", ctClass);
+			isRunning.setModifiers(Modifier.STATIC);
+			
+//			CtField isInitializedTempField = new CtField(CtClass.booleanType, fieldName + "$isInitializedTemp", ctClass);
+//			isInitializedTempField.setModifiers(Modifier.STATIC);
+
+//			CtField tmpValueField = new CtField(ctClass.getField(fieldName).getType(), fieldName + "$tmpValue", ctClass);
+//			tmpValueField.setModifiers(Modifier.STATIC);
 
 			ctClass.addField(isInitializedField, "false");
-			ctClass.addField(isInitializedTempField);
-			ctClass.addField(tmpValueField);
+			ctClass.addField(isRunning, "false");
+			
+			//ctClass.addField(isInitializedTempField);
+//			ctClass.addField(tmpValueField);
 		}
 	}
+
+
 
 	private static boolean existsFields(CtClass ctClass, String fieldName) {
 		try {
@@ -77,6 +93,24 @@ public class FieldInterceptor {
 
 	public static String createErrorMessage(String assertExpression) {
 		return "\"The assertion " + assertExpression +" is false\"";
+	}
+
+	public static void createAuxiliaryMethods(CtClass ctClass, CtField ctField, Assertion assertion) {
+		 String template = createBooleanMethod(ctField.getName() + "$assertExpression" , assertion.value());
+		 CtMethod evaluateBooleanExpressionMethod;
+		try {
+			evaluateBooleanExpressionMethod = CtNewMethod.make(template, ctClass);
+			if(Modifier.isStatic(ctField.getModifiers())){
+				evaluateBooleanExpressionMethod.setModifiers(Modifier.STATIC);
+			}
+			ctClass.addMethod(evaluateBooleanExpressionMethod);
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static String createBooleanMethod(String methodName, String assertExpression) {
+		return "boolean " + methodName + "(){ return " + assertExpression + "; }";
 	}
 
 }

@@ -39,7 +39,7 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 	}
 	
 	public void superInvalideWrite2() {
-		s = "PO";
+		super.s = "PO";
 	}
 
 	
@@ -59,7 +59,6 @@ public class TestFieldAssignment extends TestFieldFromSuper{
 			fieldAssignment.validWrite();
 			printTestResult(System.out, PASS, "validWrite", "");
 		} catch(RuntimeException e){
-			e.printStackTrace();
 			printTestResult(System.err, FAIL, "validWrite", "");
 		}
 		try {
@@ -107,7 +106,7 @@ public class TestFieldAssignment extends TestFieldFromSuper{
               fieldAssignment.superInvalideWrite2();
               printTestResult(System.err, FAIL, "superInvalideWrite2", "");
           } catch(RuntimeException e){
-              printTestResult(System.out, PASS, "superInvalideWrite2", "");
+        	  printTestResult(System.out, PASS, "superInvalideWrite2", "");
           }
 	      
 	      try {
